@@ -1,25 +1,88 @@
-
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+  # PHP & SERVER
+  php:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: parse_php
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - .:/var/www/html
+    networks:
+      - parse
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "9000:9000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: parse_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - parse
+    depends_on:
+      - php
+
+  # DATABASE
+  postgres:
+    image: postgres:16-alpine
+    container_name: parse_postgres
+    environment:
+      POSTGRES_DB: db_name
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - parse
+
+  # QUEUE
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: parse_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - parse
+
+  # DB Browser (adminer here but you can use any)
+  adminer:
+    image: adminer
+    container_name: parse_adminer
+    ports:
+      - "8081:8080"
+    networks:
+      - parse
+    depends_on:
+      - postgres
+
+  # MAIL CATCHER
+  mailpit:
+    image: axllent/mailpit
+    container_name: parse_mailpit
+    ports:
+      - "1080:8025"
+      - "1025:1025"
+    networks:
+      - parse
+
+networks:
+  parse:
+    driver: bridge
 
 volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  postgres_data:
+  rabbitmq_data:
