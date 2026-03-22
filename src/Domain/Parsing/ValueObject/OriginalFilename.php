@@ -6,7 +6,7 @@ namespace App\Domain\Parsing\ValueObject;
 
 final class OriginalFilename
 {
-    private const MAX_LENGTH = 255;
+    private const int MAX_LENGTH = 255;
 
     private readonly string $value;
 

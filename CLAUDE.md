@@ -11,36 +11,51 @@ Full MVP spec: `.claude/mvp.md`
 
 ## Architecture
 
-The project follows **Domain-Driven Design** with a strict three-layer structure:
+The project follows **Domain-Driven Design** with a four-layer structure:
 
 ```
 src/
-├── Domain/          # Business logic — no framework dependencies
+├── Domain/          # Pure business logic — no framework dependencies
 │   └── Parsing/
 │       ├── Model/          # Entities with identity and lifecycle (ParseJob, ParseResult)
 │       ├── ValueObject/    # Immutable typed wrappers (WebhookUrl, OriginalFilename)
 │       ├── Repository/     # Repository interfaces (not implementations)
 │       ├── Service/        # Domain services (PdfExtractor, TextCleaner, SchemaValidator…)
-│       ├── Command/        # Messenger messages (ParseResumeCommand, NotifyWebhookCommand)
-│       ├── Handler/        # Messenger handlers (ParseResumeHandler, NotifyWebhookHandler)
 │       └── Exception/      # Domain exceptions (ScannedPdfException, InvalidAiOutputException…)
+├── Application/     # Use case orchestration — coordinates domain objects, no business logic
+│   └── Parsing/
+│       ├── Command/        # Messenger messages (ParseResumeCommand, NotifyWebhookCommand)
+│       └── Handler/        # Messenger handlers (ParseResumeHandler, NotifyWebhookHandler)
 ├── Infrastructure/  # Adapters for external systems
 │   ├── Ai/                 # MistralProvider (implements AiProviderInterface)
-│   ├── Persistence/        # Doctrine entities, repositories, migrations
+│   ├── Persistence/        # Doctrine repositories, custom DBAL types, migrations
 │   └── Http/               # Symfony HttpClient wrappers
-└── UI/              # Entry points
+└── UI/              # Entry points — HTTP only
     └── Api/
-        ├── Controller/     # Slim controllers — validate input, delegate to domain, return response
+        ├── Controller/     # Slim controllers — validate input, dispatch commands, return response
         └── DTO/            # Request/response DTOs with OpenAPI annotations
 ```
 
+### Layer responsibilities
+
+| Layer | Knows about | Does NOT know about |
+|---|---|---|
+| `Domain` | Its own models, VOs, interfaces | Symfony, Doctrine, HTTP, Messenger |
+| `Application` | Domain objects, Messenger commands | HTTP, Doctrine, external APIs |
+| `Infrastructure` | Domain interfaces, Doctrine, HTTP clients | Application layer internals |
+| `UI` | HTTP, Application commands, DTOs | Domain internals, database |
+
 ### Key rules
 
-- **Entities live in `Domain/Parsing/Model/`** with Doctrine `#[ORM\...]` attributes. This is the pragmatic standard for Symfony projects — Doctrine attributes are metadata, not business logic.
-- **No other framework imports in the domain.** No Symfony services, no HTTP layer, no Messenger — only PHP, Doctrine ORM attributes, and your own interfaces.
-- **Repository interfaces** are declared in `Domain`, implementations in `Infrastructure/Persistence`.
-- **Controllers do one thing**: validate HTTP input → call a domain service or dispatch a command → return a response. Business logic never lives in a controller.
-- **Messenger handlers** orchestrate domain services; they do not contain business logic themselves.
+- **Entities live in `Domain/Parsing/Model/`** with Doctrine `#[ORM\...]` attributes. Pragmatic standard for Symfony — Doctrine attributes are metadata, not business logic.
+- **No other framework imports in the domain.** No Symfony services, no HTTP layer, no Messenger.
+- **Application handlers orchestrate, domain services decide.** A handler calls `PdfExtractor`, `MistralProvider`, `ParseJob::markAsDone()` — it does not contain if/else business rules itself.
+- **Repository interfaces** declared in `Domain`, implemented in `Infrastructure/Persistence`.
+- **Controllers do one thing**: validate HTTP input → dispatch a command or call an application service → return a response.
+
+### DDD education
+
+**This project is a learning exercise in DDD.** When writing or reviewing code, agents should briefly explain *why* a piece of code is structured the way it is — which layer it belongs to, what DDD concept it applies, and what would go wrong if it were placed elsewhere. Keep explanations concise but make the reasoning visible. The `docs/` folder contains detailed notes for reference.
 
 ---
 

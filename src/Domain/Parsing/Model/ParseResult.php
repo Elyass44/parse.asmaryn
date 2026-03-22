@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'parse_result')]
-#[ORM\Index(columns: ['job_id'], name: 'idx_parse_result_job_id')]
+#[ORM\Index(name: 'idx_parse_result_job_id', columns: ['job_id'])]
 class ParseResult
 {
     #[ORM\Id]

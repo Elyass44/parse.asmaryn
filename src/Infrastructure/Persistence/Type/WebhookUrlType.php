@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 final class WebhookUrlType extends StringType
 {
-    public const NAME = 'webhook_url';
+    public const string NAME = 'webhook_url';
 
     public function getName(): string
     {

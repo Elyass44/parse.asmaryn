@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 final class OriginalFilenameType extends StringType
 {
-    public const NAME = 'original_filename';
+    public const string NAME = 'original_filename';
 
     public function getName(): string
     {

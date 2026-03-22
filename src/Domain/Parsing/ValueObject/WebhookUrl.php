@@ -6,9 +6,9 @@ namespace App\Domain\Parsing\ValueObject;
 
 use App\Domain\Parsing\Exception\InvalidWebhookUrlException;
 
-final class WebhookUrl
+final readonly class WebhookUrl
 {
-    private readonly string $value;
+    private string $value;
 
     public function __construct(string $value)
     {
