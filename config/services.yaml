@@ -19,5 +19,9 @@ services:
     App\:
         resource: '../src/'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # Repository interface bindings
+    App\Domain\Parsing\Repository\ParseJobRepositoryInterface:
+        class: App\Infrastructure\Persistence\Repository\DoctrineParseJobRepository
+
+    App\Domain\Parsing\Repository\ParseResultRepositoryInterface:
+        class: App\Infrastructure\Persistence\Repository\DoctrineParseResultRepository

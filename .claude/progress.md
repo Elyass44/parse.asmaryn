@@ -10,7 +10,7 @@
 - [x] MVP-001 · Symfony project bootstrap
 - [x] MVP-002 · Docker Compose setup
 - [x] MVP-003 · VPS deployment config
-- [ ] MVP-004 · Database schema & migrations
+- [x] MVP-004 · Database schema & migrations
 
 ## Epic 2 — PDF ingestion
 

@@ -17,8 +17,11 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     zip \
     unzip \
+    librabbitmq-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install pdo pdo_pgsql pgsql intl opcache gd zip fileinfo \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer

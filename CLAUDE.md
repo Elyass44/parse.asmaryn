@@ -17,7 +17,8 @@ The project follows **Domain-Driven Design** with a strict three-layer structure
 src/
 ├── Domain/          # Business logic — no framework dependencies
 │   └── Parsing/
-│       ├── Model/          # Entities, Value Objects, Enums (ParseJob, ParseResult, JobStatus…)
+│       ├── Model/          # Entities with identity and lifecycle (ParseJob, ParseResult)
+│       ├── ValueObject/    # Immutable typed wrappers (WebhookUrl, OriginalFilename)
 │       ├── Repository/     # Repository interfaces (not implementations)
 │       ├── Service/        # Domain services (PdfExtractor, TextCleaner, SchemaValidator…)
 │       ├── Command/        # Messenger messages (ParseResumeCommand, NotifyWebhookCommand)
@@ -35,8 +36,8 @@ src/
 
 ### Key rules
 
-- **Domain layer has zero framework imports.** No Symfony, no Doctrine annotations — only PHP and your own interfaces.
-- **Entities live in `Domain/Parsing/Model/`**, mapped by Doctrine XML or attribute mapping in `Infrastructure/Persistence/`.
+- **Entities live in `Domain/Parsing/Model/`** with Doctrine `#[ORM\...]` attributes. This is the pragmatic standard for Symfony projects — Doctrine attributes are metadata, not business logic.
+- **No other framework imports in the domain.** No Symfony services, no HTTP layer, no Messenger — only PHP, Doctrine ORM attributes, and your own interfaces.
 - **Repository interfaces** are declared in `Domain`, implementations in `Infrastructure/Persistence`.
 - **Controllers do one thing**: validate HTTP input → call a domain service or dispatch a command → return a response. Business logic never lives in a controller.
 - **Messenger handlers** orchestrate domain services; they do not contain business logic themselves.
