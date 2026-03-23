@@ -1,4 +1,4 @@
-.PHONY: help start build stop restart bash bash-root log log-clear dlog clear-cache
+.PHONY: help start build stop restart bash bash-root log log-clear dlog clear-cache worker
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -53,3 +53,6 @@ lint: ## Run PHP CS Fixer (dry-run) and PHPStan
 
 fix: ## Auto-fix all PHP CS Fixer violations
 	docker compose exec -u www-data php vendor/bin/php-cs-fixer fix
+
+worker: ## Consume messages from the async transport
+	docker compose exec -u www-data php bin/console messenger:consume async --time-limit=3600 -vv
