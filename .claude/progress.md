@@ -26,7 +26,7 @@
 - [x] MVP-023 · Cleanup command
 - [x] MVP-024 · NotifyWebhookCommand & handler
 - [x] MVP-025 · Webhook retry strategy
-- [ ] MVP-026 · Webhook signature verification doc
+- [x] MVP-026 · Webhook signature verification doc
 
 ## Epic 4 — Mistral integration
 

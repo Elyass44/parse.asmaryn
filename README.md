@@ -102,6 +102,55 @@ make lint     # PHP CS Fixer (dry-run) + PHPStan
 
 ---
 
+## Webhook signature verification
+
+Every webhook POST includes an `X-Signature` header — an HMAC-SHA256 hex digest of the raw JSON body, signed with your `WEBHOOK_SECRET`.
+
+> Polling via `GET /api/parse/{id}` is always available as a fallback if webhook delivery fails or your server is temporarily unavailable.
+
+### Generating a secret
+
+```bash
+openssl rand -hex 32
+```
+
+Set the value as `WEBHOOK_SECRET` in your environment.
+
+### Verifying the signature — PHP
+
+```php
+$body      = file_get_contents('php://input');
+$signature = $_SERVER['HTTP_X_SIGNATURE'] ?? '';
+$expected  = hash_hmac('sha256', $body, getenv('WEBHOOK_SECRET'));
+
+if (!hash_equals($expected, $signature)) {
+    http_response_code(401);
+    exit('Invalid signature');
+}
+
+$payload = json_decode($body, true);
+```
+
+### Verifying the signature — Python
+
+```python
+import hmac, hashlib, os
+
+def verify_webhook(body: bytes, signature: str) -> bool:
+    secret = os.environ["WEBHOOK_SECRET"].encode()
+    expected = hmac.new(secret, body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+# In your request handler:
+body = request.get_data()  # raw bytes
+if not verify_webhook(body, request.headers.get("X-Signature", "")):
+    abort(401)
+
+payload = request.get_json()
+```
+
+---
+
 ## Known limitations
 
 - Scanned PDFs (image-only) are not supported — text extraction will fail with a clear error
