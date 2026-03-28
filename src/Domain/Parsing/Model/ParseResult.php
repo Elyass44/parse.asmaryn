@@ -18,12 +18,14 @@ class ParseResult
     #[ORM\Column(type: 'string', length: 36)]
     private string $jobId;
 
+    /** @var array<string, mixed> */
     #[ORM\Column(type: 'json')]
     private array $payload;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
+    /** @param array<string, mixed> $payload */
     private function __construct(
         string $id,
         string $jobId,
@@ -36,6 +38,7 @@ class ParseResult
         $this->createdAt = $createdAt;
     }
 
+    /** @param array<string, mixed> $payload */
     public static function create(string $id, string $jobId, array $payload): self
     {
         return new self(
@@ -56,6 +59,7 @@ class ParseResult
         return $this->jobId;
     }
 
+    /** @return array<string, mixed> */
     public function getPayload(): array
     {
         return $this->payload;

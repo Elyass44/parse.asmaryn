@@ -49,7 +49,7 @@ test: ## Run PHPUnit test suite
 
 lint: ## Run PHP CS Fixer (dry-run) and PHPStan
 	docker compose exec -u www-data php vendor/bin/php-cs-fixer fix --dry-run --diff
-	docker compose exec -u www-data php vendor/bin/phpstan analyse
+	docker compose exec -u www-data php vendor/bin/phpstan analyse --memory-limit=512M
 
 fix: ## Auto-fix all PHP CS Fixer violations
 	docker compose exec -u www-data php vendor/bin/php-cs-fixer fix

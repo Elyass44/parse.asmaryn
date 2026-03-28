@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract readonly class AbstractApiController
 {
+    /** @param array<string, mixed> $details */
     protected function errorResponse(string $code, string $message, array $details, int $status): JsonResponse
     {
         return new JsonResponse([
