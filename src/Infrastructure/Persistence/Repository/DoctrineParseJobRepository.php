@@ -24,4 +24,19 @@ class DoctrineParseJobRepository implements ParseJobRepositoryInterface
     {
         return $this->em->find(ParseJob::class, $id);
     }
+
+    public function findOlderThan(\DateTimeImmutable $threshold): array
+    {
+        return $this->em->createQuery(
+            'SELECT j FROM '.ParseJob::class.' j WHERE j.createdAt < :threshold'
+        )
+            ->setParameter('threshold', $threshold)
+            ->getResult();
+    }
+
+    public function delete(ParseJob $job): void
+    {
+        $this->em->remove($job);
+        $this->em->flush();
+    }
 }

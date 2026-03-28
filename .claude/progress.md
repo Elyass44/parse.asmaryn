@@ -20,12 +20,12 @@
 
 ## Epic 3 — Async processing pipeline
 
-- [ ] MVP-020 · Messenger transport configuration
-- [ ] MVP-021 · ParseResumeCommand & handler
-- [ ] MVP-022 · Job status polling endpoint
-- [ ] MVP-023 · Cleanup command
-- [ ] MVP-024 · NotifyWebhookCommand & handler
-- [ ] MVP-025 · Webhook retry strategy
+- [x] MVP-020 · Messenger transport configuration
+- [x] MVP-021 · ParseResumeCommand & handler
+- [x] MVP-022 · Job status polling endpoint
+- [x] MVP-023 · Cleanup command
+- [x] MVP-024 · NotifyWebhookCommand & handler
+- [x] MVP-025 · Webhook retry strategy
 - [ ] MVP-026 · Webhook signature verification doc
 
 ## Epic 4 — Mistral integration

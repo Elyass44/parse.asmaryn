@@ -24,4 +24,13 @@ class DoctrineParseResultRepository implements ParseResultRepositoryInterface
     {
         return $this->em->getRepository(ParseResult::class)->findOneBy(['jobId' => $jobId]);
     }
+
+    public function deleteByJobId(string $jobId): void
+    {
+        $this->em->createQuery(
+            'DELETE FROM '.ParseResult::class.' r WHERE r.jobId = :jobId'
+        )
+            ->setParameter('jobId', $jobId)
+            ->execute();
+    }
 }

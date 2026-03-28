@@ -33,6 +33,9 @@ class ParseJob
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $errorMessage;
 
+    #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    private ?string $errorCode;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
@@ -46,6 +49,7 @@ class ParseJob
         ?WebhookUrl $webhookUrl,
         ?WebhookStatus $webhookStatus,
         ?string $errorMessage,
+        ?string $errorCode,
         \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
     ) {
@@ -55,6 +59,7 @@ class ParseJob
         $this->webhookUrl = $webhookUrl;
         $this->webhookStatus = $webhookStatus;
         $this->errorMessage = $errorMessage;
+        $this->errorCode = $errorCode;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -73,6 +78,7 @@ class ParseJob
             webhookUrl: $webhookUrl,
             webhookStatus: null !== $webhookUrl ? WebhookStatus::Pending : null,
             errorMessage: null,
+            errorCode: null,
             createdAt: $now,
             updatedAt: $now,
         );
@@ -90,10 +96,11 @@ class ParseJob
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function markAsFailed(string $errorMessage): void
+    public function markAsFailed(string $errorMessage, string $errorCode = 'PROCESSING_ERROR'): void
     {
         $this->status = JobStatus::Failed;
         $this->errorMessage = $errorMessage;
+        $this->errorCode = $errorCode;
         $this->updatedAt = new \DateTimeImmutable();
     }
 
@@ -137,6 +144,11 @@ class ParseJob
     public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
+    }
+
+    public function getErrorCode(): ?string
+    {
+        return $this->errorCode;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

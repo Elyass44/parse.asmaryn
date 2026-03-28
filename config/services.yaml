@@ -38,6 +38,16 @@ services:
     # Smalot Parser has no constructor args — autowired automatically
     Smalot\PdfParser\Parser: ~
 
+    # WebhookSenderInterface → infrastructure adapter (Symfony HttpClient)
+    App\Application\Parsing\WebhookSenderInterface:
+        class: App\Infrastructure\Http\WebhookSender
+        arguments:
+            $webhookSecret: '%env(WEBHOOK_SECRET)%'
+
     App\UI\Api\Controller\ParseUploadController:
+        arguments:
+            $uploadDir: '%app.upload_dir%'
+
+    App\UI\Console\CleanupParseJobsCommand:
         arguments:
             $uploadDir: '%app.upload_dir%'

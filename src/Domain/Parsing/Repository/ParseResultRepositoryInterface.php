@@ -11,4 +11,6 @@ interface ParseResultRepositoryInterface
     public function save(ParseResult $result): void;
 
     public function findByJobId(string $jobId): ?ParseResult;
+
+    public function deleteByJobId(string $jobId): void;
 }

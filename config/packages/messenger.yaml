@@ -3,14 +3,28 @@ framework:
         failure_transport: failed
 
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # Main async transport for ParseResumeCommand.
+            # Retry: 1s → 5s → 25s (exponential, multiplier 5).
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 retry_strategy:
                     max_retries: 3
-                    multiplier: 2
+                    delay: 1000
+                    multiplier: 5
+
+            # Dedicated transport for webhook delivery with slower retry cadence.
+            # Retry: 30s → 5min → 30min (capped).
+            async_webhook:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    queue_name: webhook
+                retry_strategy:
+                    max_retries: 3
+                    delay: 30000
+                    multiplier: 10
+                    max_delay: 1800000
+
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
 
         default_bus: messenger.bus.default
 
@@ -18,8 +32,5 @@ framework:
             messenger.bus.default: []
 
         routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-            Symfony\Component\Notifier\Message\ChatMessage: async
-            Symfony\Component\Notifier\Message\SmsMessage: async
-
             App\Application\Parsing\Command\ParseResumeCommand: async
+            App\Application\Parsing\Command\NotifyWebhookCommand: async_webhook

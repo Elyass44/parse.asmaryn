@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Parsing\Handler;
 
+use App\Application\Parsing\Command\NotifyWebhookCommand;
 use App\Application\Parsing\Command\ParseResumeCommand;
+use App\Domain\Parsing\Exception\ScannedPdfException;
 use App\Domain\Parsing\Repository\ParseJobRepositoryInterface;
 use App\Domain\Parsing\Service\PdfExtractorInterface;
 use App\Domain\Parsing\Service\TextCleanerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * DDD note: this handler lives in the Application layer — it orchestrates
@@ -24,8 +27,9 @@ final readonly class ParseResumeHandler
         private ParseJobRepositoryInterface $parseJobRepository,
         private PdfExtractorInterface $pdfExtractor,
         private TextCleanerInterface $textCleaner,
-        // TODO MVP-030: AiProviderInterface (MistralProvider)
-        // TODO MVP-032: SchemaValidatorInterface
+        private MessageBusInterface $messageBus,
+        // TODO MVP-030: AiProviderInterface $aiProvider,
+        // TODO MVP-032: SchemaValidatorInterface $schemaValidator,
     ) {
     }
 
@@ -40,10 +44,26 @@ final readonly class ParseResumeHandler
         $job->markAsProcessing();
         $this->parseJobRepository->save($job);
 
-        $text = $this->pdfExtractor->extract($command->filePath);
-        $cleaned = $this->textCleaner->clean($text);
-        // TODO MVP-030: $raw     = $this->aiProvider->extract($cleaned);
-        // TODO MVP-032: $payload = $this->schemaValidator->validate($raw);
-        // TODO: persist ParseResult, markAsDone(), dispatch NotifyWebhookCommand if webhook set
+        try {
+            $text = $this->pdfExtractor->extract($command->filePath);
+            $cleaned = $this->textCleaner->clean($text);
+
+            // TODO MVP-030: $raw     = $this->aiProvider->extract($cleaned->text);
+            // TODO MVP-032: $payload = $this->schemaValidator->validate($raw);
+            //               $result  = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload);
+            //               $this->parseResultRepository->save($result); // inject ParseResultRepositoryInterface in MVP-030
+            //               $job->markAsDone();
+            //               $this->parseJobRepository->save($job);
+        } catch (ScannedPdfException $e) {
+            $job->markAsFailed($e->getMessage(), 'SCANNED_PDF');
+            $this->parseJobRepository->save($job);
+        } catch (\Throwable $e) {
+            $job->markAsFailed($e->getMessage(), 'PROCESSING_ERROR');
+            $this->parseJobRepository->save($job);
+        }
+
+        if ($job->hasWebhook()) {
+            $this->messageBus->dispatch(new NotifyWebhookCommand($job->getId()));
+        }
     }
 }
