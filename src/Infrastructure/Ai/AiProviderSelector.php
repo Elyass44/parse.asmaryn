@@ -7,6 +7,7 @@ namespace App\Infrastructure\Ai;
 use App\Domain\Parsing\Exception\AiProviderException;
 use App\Domain\Parsing\Service\AiProviderInterface;
 use App\Domain\Parsing\ValueObject\CleanedText;
+use App\Domain\Parsing\ValueObject\ExtractionResult;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -26,8 +27,7 @@ final readonly class AiProviderSelector implements AiProviderInterface
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function extract(CleanedText $text): array
+    public function extract(CleanedText $text): ExtractionResult
     {
         return match ($this->activeProvider) {
             'openai' => $this->openAi->extract($text),

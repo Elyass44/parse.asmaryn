@@ -48,9 +48,15 @@
 
 ## Epic 6 — Demo page
 
-- [ ] MVP-050 · Demo page HTML/CSS
-- [ ] MVP-051 · Polling logic
-- [ ] MVP-052 · Demo page rate limit UX
+- [x] MVP-050 · Demo page HTML/CSS
+- [x] MVP-051 · Polling logic
+- [x] MVP-052 · Demo page rate limit UX
+
+## Epic 8 — Stats & deduplication
+
+- [x] MVP-070 · Token usage tracking (tokens_prompt/completion/total + ai_provider on parse_result)
+- [x] MVP-071 · Processing duration tracking (started_at on parse_job)
+- [x] MVP-072 · Resume deduplication via content hash (SHA-256 on parse_job, reuse on upload)
 
 ## Epic 7 — Hardening & limits
 

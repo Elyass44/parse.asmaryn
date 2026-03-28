@@ -7,6 +7,7 @@ namespace App\Infrastructure\Ai;
 use App\Domain\Parsing\Exception\AiProviderException;
 use App\Domain\Parsing\Service\AiProviderInterface;
 use App\Domain\Parsing\ValueObject\CleanedText;
+use App\Domain\Parsing\ValueObject\ExtractionResult;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\Exception\TimeoutExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -30,10 +31,10 @@ final readonly class MistralProvider implements AiProviderInterface
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function extract(CleanedText $text): array
+    public function extract(CleanedText $text): ExtractionResult
     {
         try {
+            $startNs = hrtime(true);
             $response = $this->httpClient->request('POST', self::ENDPOINT, [
                 'timeout' => self::TIMEOUT,
                 'headers' => [
@@ -57,6 +58,7 @@ final readonly class MistralProvider implements AiProviderInterface
             }
 
             $data = $response->toArray();
+            $aiDurationMs = (int) round((hrtime(true) - $startNs) / 1_000_000);
             $content = $data['choices'][0]['message']['content'] ?? null;
 
             if (!is_string($content)) {
@@ -69,7 +71,16 @@ final readonly class MistralProvider implements AiProviderInterface
                 throw AiProviderException::fromResponse($statusCode, 'Response content is not valid JSON.');
             }
 
-            return $decoded;
+            $usage = $data['usage'] ?? [];
+
+            return new ExtractionResult(
+                payload: $decoded,
+                tokensPrompt: (int) ($usage['prompt_tokens'] ?? 0),
+                tokensCompletion: (int) ($usage['completion_tokens'] ?? 0),
+                tokensTotal: (int) ($usage['total_tokens'] ?? 0),
+                provider: 'mistral',
+                aiDurationMs: $aiDurationMs,
+            );
         } catch (TimeoutExceptionInterface) {
             throw AiProviderException::fromTimeout();
         }

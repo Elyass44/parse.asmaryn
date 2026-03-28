@@ -12,6 +12,8 @@ interface ParseJobRepositoryInterface
 
     public function findById(string $id): ?ParseJob;
 
+    public function findDoneByContentHash(string $hash, string $excludeJobId): ?ParseJob;
+
     /** @return ParseJob[] */
     public function findOlderThan(\DateTimeImmutable $threshold): array;
 

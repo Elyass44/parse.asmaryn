@@ -16,6 +16,7 @@
 | 5 | REST API | 4 |
 | 6 | Demo page | 3 |
 | 7 | Hardening & limits | 3 |
+| 8 | Stats & deduplication | 3 |
 
 ---
 
@@ -575,6 +576,57 @@ Write a complete README so the project is immediately usable by anyone cloning t
 - API reference (link to `/api/doc`)
 - Known limitations (scanned PDFs, language support)
 - Roadmap (multi-provider, tenants, billing)
+
+---
+
+## Epic 8 — Stats & deduplication
+
+### MVP-070 · Token usage tracking
+
+**Description**
+Capture the token counts returned by the AI provider on every successful extraction and persist them on `ParseResult`.
+
+**DB changes**
+- `parse_result`: add `tokens_prompt INT NULL`, `tokens_completion INT NULL`, `tokens_total INT NULL`, `ai_provider VARCHAR(32) NULL`
+
+**Acceptance criteria**
+- Both `MistralProvider` and `OpenAiProvider` extract `usage.prompt_tokens`, `usage.completion_tokens`, `usage.total_tokens` from the API response
+- `AiProviderInterface::extract()` return type updated to carry token data alongside the JSON payload (e.g. a typed `ExtractionResult` DTO)
+- `ParseResumeHandler` persists all four fields on `ParseResult`
+- Fields are `NULL` only when the provider returns no usage data (defensive, not expected)
+- Migration is reversible
+
+---
+
+### MVP-071 · Processing duration tracking
+
+**Description**
+Record when the worker actually starts processing a job so processing time can be measured.
+
+**DB changes**
+- `parse_job`: add `started_at TIMESTAMP NULL`
+
+**Acceptance criteria**
+- `ParseResumeHandler` sets `started_at` on the `ParseJob` when it transitions to `processing`
+- Duration is derivable as `updated_at - started_at` on `done`/`failed` jobs (no redundant column)
+- Migration is reversible
+
+---
+
+### MVP-072 · Resume deduplication via content hash
+
+**Description**
+Avoid re-parsing an identical PDF by hashing its content at upload time and reusing an existing result if one exists.
+
+**DB changes**
+- `parse_job`: add `content_hash CHAR(64) NULL` (SHA-256 hex of raw PDF bytes)
+
+**Acceptance criteria**
+- `ParseUploadController` computes SHA-256 of the uploaded file bytes and stores it on the new `ParseJob`
+- Before persisting the new job, the controller queries for an existing `ParseJob` with `status = done` and the same `content_hash`
+- If a match is found: the uploaded file is discarded, no new job is created, and the existing job ID is returned with `200 OK` (instead of the usual `202`)
+- No `UNIQUE` constraint on `content_hash` — only completed jobs are reusable; pending/failed jobs with the same hash are ignored
+- Migration is reversible
 
 ---
 

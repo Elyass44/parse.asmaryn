@@ -130,11 +130,13 @@ final readonly class ParseUploadController extends AbstractApiController
         // Capture original filename before moving the file.
         $originalFilename = new OriginalFilename($uploadedFile->getClientOriginalName());
 
+        $contentHash = hash('sha256', file_get_contents($uploadedFile->getPathname()) ?: '');
+
         $jobId = Uuid::v7()->toRfc4122();
         $filePath = sprintf('%s/%s.pdf', rtrim($this->uploadDir, '/'), $jobId);
 
         // Persist first — if the DB is down we don't want an orphaned file on disk.
-        $job = ParseJob::create($jobId, $originalFilename, $webhookUrl);
+        $job = ParseJob::create($jobId, $originalFilename, $webhookUrl, $contentHash);
         $this->parseJobRepository->save($job);
 
         $uploadedFile->move($this->uploadDir, $jobId.'.pdf');

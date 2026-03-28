@@ -53,13 +53,26 @@ final readonly class ParseResumeHandler
         $this->parseJobRepository->save($job);
 
         try {
-            $text = $this->pdfExtractor->extract($command->filePath);
-            $cleaned = $this->textCleaner->clean($text);
+            $duplicate = null !== $job->getContentHash()
+                ? $this->parseJobRepository->findDoneByContentHash($job->getContentHash(), $job->getId())
+                : null;
 
-            $raw = $this->aiProvider->extract($cleaned);
-            $payload = $this->schemaValidator->validate($raw);
+            if (null !== $duplicate) {
+                $existing = $this->parseResultRepository->findByJobId($duplicate->getId());
+            }
 
-            $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload);
+            if (null !== $duplicate && null !== $existing) {
+                $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $existing->getPayload(), $existing->toExtractionResult());
+            } else {
+                $text = $this->pdfExtractor->extract($command->filePath);
+                $cleaned = $this->textCleaner->clean($text);
+
+                $extraction = $this->aiProvider->extract($cleaned);
+                $payload = $this->schemaValidator->validate($extraction->payload);
+
+                $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload, $extraction);
+            }
+
             $this->parseResultRepository->save($result);
 
             $job->markAsDone();

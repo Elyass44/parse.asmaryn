@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence\Repository;
 
+use App\Domain\Parsing\Model\JobStatus;
 use App\Domain\Parsing\Model\ParseJob;
 use App\Domain\Parsing\Repository\ParseJobRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +26,18 @@ class DoctrineParseJobRepository implements ParseJobRepositoryInterface
     public function findById(string $id): ?ParseJob
     {
         return $this->em->find(ParseJob::class, $id);
+    }
+
+    public function findDoneByContentHash(string $hash, string $excludeJobId): ?ParseJob
+    {
+        return $this->em->createQuery(
+            'SELECT j FROM '.ParseJob::class.' j WHERE j.contentHash = :hash AND j.status = :status AND j.id != :excludeId'
+        )
+            ->setParameter('hash', $hash)
+            ->setParameter('status', JobStatus::Done)
+            ->setParameter('excludeId', $excludeJobId)
+            ->setMaxResults(1)
+            ->getOneOrNullResult();
     }
 
     public function findOlderThan(\DateTimeImmutable $threshold): array

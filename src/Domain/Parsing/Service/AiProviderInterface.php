@@ -6,6 +6,7 @@ namespace App\Domain\Parsing\Service;
 
 use App\Domain\Parsing\Exception\AiProviderException;
 use App\Domain\Parsing\ValueObject\CleanedText;
+use App\Domain\Parsing\ValueObject\ExtractionResult;
 
 /**
  * DDD note: this interface lives in the Domain layer so the Application layer
@@ -18,9 +19,10 @@ interface AiProviderInterface
     /**
      * Extracts structured résumé data from cleaned text.
      *
-     * @return array<string, mixed> raw decoded JSON from the provider
+     * Returns an ExtractionResult carrying both the decoded JSON payload and
+     * the token usage reported by the provider (prompt, completion, total).
      *
      * @throws AiProviderException on HTTP error, timeout, or malformed response
      */
-    public function extract(CleanedText $text): array;
+    public function extract(CleanedText $text): ExtractionResult;
 }
