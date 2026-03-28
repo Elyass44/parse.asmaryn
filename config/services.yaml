@@ -51,3 +51,14 @@ services:
     App\UI\Console\CleanupParseJobsCommand:
         arguments:
             $uploadDir: '%app.upload_dir%'
+
+    # AiProviderInterface → Mistral HTTP adapter
+    App\Domain\Parsing\Service\AiProviderInterface:
+        class: App\Infrastructure\Ai\MistralProvider
+        arguments:
+            $apiKey: '%env(MISTRAL_API_KEY)%'
+            $model: '%env(string:MISTRAL_MODEL)%'
+
+    # SchemaValidatorInterface → pure domain service
+    App\Domain\Parsing\Service\SchemaValidatorInterface:
+        class: App\Domain\Parsing\Service\SchemaValidator

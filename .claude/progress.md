@@ -30,9 +30,9 @@
 
 ## Epic 4 — Mistral integration
 
-- [ ] MVP-030 · MistralProvider service
-- [ ] MVP-031 · Extraction prompt & output schema
-- [ ] MVP-032 · JSON output validation
+- [x] MVP-030 · MistralProvider service
+- [x] MVP-031 · Extraction prompt & output schema
+- [x] MVP-032 · JSON output validation
 
 ## Epic 5 — REST API
 
