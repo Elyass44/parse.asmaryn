@@ -1,68 +1,23 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-# See also https://symfony.com/doc/current/service_container/import.html
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.upload_dir: '%kernel.project_dir%/var/uploads'
 
 services:
-    # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: true
+        autoconfigure: true
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
 
-    # Repository interface bindings
-    App\Domain\Parsing\Repository\ParseJobRepositoryInterface:
-        class: App\Infrastructure\Persistence\Repository\DoctrineParseJobRepository
+    # Third-party vendor class outside src/ — must be registered explicitly
+    Smalot\PdfParser\Parser: ~
 
-    App\Domain\Parsing\Repository\ParseResultRepositoryInterface:
-        class: App\Infrastructure\Persistence\Repository\DoctrineParseResultRepository
-
-    # TextCleanerInterface → pure domain service, no infrastructure adapter needed
+    # Domain service interface bindings — kept here because the Domain layer must not
+    # import Symfony attributes (see CLAUDE.md). Infrastructure adapters use #[AsAlias] instead.
     App\Domain\Parsing\Service\TextCleanerInterface:
         class: App\Domain\Parsing\Service\TextCleaner
 
-    # PdfExtractorInterface → infrastructure adapter (smalot/pdfparser)
-    App\Domain\Parsing\Service\PdfExtractorInterface:
-        class: App\Infrastructure\Pdf\PdfExtractor
-
-    # Smalot Parser has no constructor args — autowired automatically
-    Smalot\PdfParser\Parser: ~
-
-    # WebhookSenderInterface → infrastructure adapter (Symfony HttpClient)
-    App\Application\Parsing\WebhookSenderInterface:
-        class: App\Infrastructure\Http\WebhookSender
-        arguments:
-            $webhookSecret: '%env(WEBHOOK_SECRET)%'
-
-    App\UI\Api\Controller\ParseUploadController:
-        arguments:
-            $uploadDir: '%app.upload_dir%'
-
-    App\UI\Api\Controller\HealthController:
-        arguments:
-            $messengerTransportDsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-
-    App\UI\Console\CleanupParseJobsCommand:
-        arguments:
-            $uploadDir: '%app.upload_dir%'
-
-    # AiProviderInterface → Mistral HTTP adapter
-    App\Domain\Parsing\Service\AiProviderInterface:
-        class: App\Infrastructure\Ai\MistralProvider
-        arguments:
-            $apiKey: '%env(MISTRAL_API_KEY)%'
-            $model: '%env(string:MISTRAL_MODEL)%'
-
-    # SchemaValidatorInterface → pure domain service
     App\Domain\Parsing\Service\SchemaValidatorInterface:
         class: App\Domain\Parsing\Service\SchemaValidator

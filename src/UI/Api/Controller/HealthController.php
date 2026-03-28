@@ -6,6 +6,7 @@ namespace App\UI\Api\Controller;
 
 use Doctrine\DBAL\Connection;
 use OpenApi\Attributes as OA;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,7 +23,7 @@ final readonly class HealthController
     public function __construct(
         private Connection $connection,
         private HttpClientInterface $httpClient,
-        private string $messengerTransportDsn,
+        #[Autowire(env: 'MESSENGER_TRANSPORT_DSN')] private string $messengerTransportDsn,
     ) {
     }
 

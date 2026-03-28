@@ -34,6 +34,11 @@
 - [x] MVP-031 · Extraction prompt & output schema
 - [x] MVP-032 · JSON output validation
 
+## Epic 4.5 — OpenAI integration
+
+- [x] MVP-033 · OpenAiProvider service
+- [x] MVP-034 · AiProviderSelector (runtime provider switching via AI_PROVIDER env var)
+
 ## Epic 5 — REST API
 
 - [x] MVP-040 · Nelmio API documentation

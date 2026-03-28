@@ -7,6 +7,7 @@ namespace App\Infrastructure\Pdf;
 use App\Domain\Parsing\Exception\ScannedPdfException;
 use App\Domain\Parsing\Service\PdfExtractorInterface;
 use Smalot\PdfParser\Parser;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 /**
  * DDD note: concrete implementation of PdfExtractorInterface lives here in
@@ -14,6 +15,7 @@ use Smalot\PdfParser\Parser;
  * The Domain layer only knows about the interface — swapping the library later
  * requires changing only this file.
  */
+#[AsAlias(PdfExtractorInterface::class)]
 final class PdfExtractor implements PdfExtractorInterface
 {
     private const int SCANNED_PDF_THRESHOLD = 200;

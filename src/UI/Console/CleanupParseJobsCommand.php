@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand(
     name: 'app:parse:cleanup',
@@ -22,7 +23,7 @@ final class CleanupParseJobsCommand extends Command
     public function __construct(
         private readonly ParseJobRepositoryInterface $parseJobRepository,
         private readonly ParseResultRepositoryInterface $parseResultRepository,
-        private readonly string $uploadDir,
+        #[Autowire(param: 'app.upload_dir')] private readonly string $uploadDir,
     ) {
         parent::__construct();
     }

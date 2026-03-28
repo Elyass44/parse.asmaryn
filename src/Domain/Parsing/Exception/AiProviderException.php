@@ -8,11 +8,11 @@ final class AiProviderException extends \RuntimeException
 {
     public static function fromResponse(int $statusCode, string $body): self
     {
-        return new self(sprintf('Mistral API returned HTTP %d: %s', $statusCode, $body));
+        return new self(sprintf('AI provider returned HTTP %d: %s', $statusCode, $body));
     }
 
     public static function fromTimeout(): self
     {
-        return new self('Mistral API timed out.');
+        return new self('AI provider timed out.');
     }
 }

@@ -7,7 +7,9 @@ namespace App\Infrastructure\Persistence\Repository;
 use App\Domain\Parsing\Model\ParseJob;
 use App\Domain\Parsing\Repository\ParseJobRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
+#[AsAlias(ParseJobRepositoryInterface::class)]
 class DoctrineParseJobRepository implements ParseJobRepositoryInterface
 {
     public function __construct(private readonly EntityManagerInterface $em)

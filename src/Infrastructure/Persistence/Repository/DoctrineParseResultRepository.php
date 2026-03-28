@@ -7,7 +7,9 @@ namespace App\Infrastructure\Persistence\Repository;
 use App\Domain\Parsing\Model\ParseResult;
 use App\Domain\Parsing\Repository\ParseResultRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
+#[AsAlias(ParseResultRepositoryInterface::class)]
 class DoctrineParseResultRepository implements ParseResultRepositoryInterface
 {
     public function __construct(private readonly EntityManagerInterface $em)

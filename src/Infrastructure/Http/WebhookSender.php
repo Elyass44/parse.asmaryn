@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use App\Application\Parsing\WebhookSenderInterface;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -12,11 +14,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * All HTTP and signing concerns are isolated here — the handler never touches
  * HttpClient directly.
  */
+#[AsAlias(WebhookSenderInterface::class)]
 final class WebhookSender implements WebhookSenderInterface
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
-        private readonly string $webhookSecret,
+        #[Autowire(env: 'WEBHOOK_SECRET')] private readonly string $webhookSecret,
     ) {
     }
 

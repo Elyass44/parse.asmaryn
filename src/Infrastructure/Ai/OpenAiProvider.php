@@ -12,21 +12,20 @@ use Symfony\Contracts\HttpClient\Exception\TimeoutExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * DDD note: this class is an Infrastructure adapter — it translates between
- * the domain's AiProviderInterface and the Mistral HTTP API. All Mistral-specific
- * details (endpoint, headers, JSON mode, model name) are contained here.
- * The Application layer only knows AiProviderInterface; swapping this for an
- * OpenAI adapter requires zero changes outside this file and services.yaml.
+ * DDD note: Infrastructure adapter for the OpenAI chat completions API.
+ * The request/response shape is identical to Mistral's, so ExtractionPrompt
+ * is shared. Only the endpoint and credential format differ — everything
+ * above this layer (Application, Domain) is completely unaware of that.
  */
-final readonly class MistralProvider implements AiProviderInterface
+final readonly class OpenAiProvider implements AiProviderInterface
 {
-    private const string ENDPOINT = 'https://api.mistral.ai/v1/chat/completions';
+    private const string ENDPOINT = 'https://api.openai.com/v1/chat/completions';
     private const int    TIMEOUT = 30;
 
     public function __construct(
         private HttpClientInterface $httpClient,
-        #[Autowire(env: 'MISTRAL_API_KEY')] private string $apiKey,
-        #[Autowire(env: 'MISTRAL_MODEL')] private string $model,
+        #[Autowire(env: 'OPENAI_API_KEY')] private string $apiKey,
+        #[Autowire(env: 'OPENAI_MODEL')] private string $model,
     ) {
     }
 

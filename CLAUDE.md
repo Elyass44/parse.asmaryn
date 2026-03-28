@@ -77,6 +77,7 @@ src/
 - Use **constructor injection** everywhere. No property injection, no `ContainerAwareTrait`.
 - Services are `private` by default in `services.yaml`. Expose only what the DI container needs.
 - Never call `$this->getDoctrine()` or `$this->get('...')` in controllers — inject repositories directly.
+- **Prefer `#[Autowire]` and `#[AsAlias]` attributes over `services.yaml` declarations.** Use `#[Autowire(env: 'VAR')]` for env vars, `#[Autowire(param: 'app.param')]` for container parameters, and `#[AsAlias(InterfaceName::class)]` on Infrastructure adapter classes to bind interfaces. Only keep entries in `services.yaml` when attributes cannot be used: third-party vendor classes (outside `src/`) and Domain-layer interface bindings (the Domain layer must not import Symfony attributes).
 - Use **Symfony Validator** for input validation; never validate manually in controllers.
 - Use `#[Route]` attributes on controllers; keep route names consistent: `api_parse_upload`, `api_parse_status`, `api_health`.
 

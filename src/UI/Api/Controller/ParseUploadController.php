@@ -11,6 +11,7 @@ use App\Domain\Parsing\ValueObject\OriginalFilename;
 use App\Domain\Parsing\ValueObject\WebhookUrl;
 use App\UI\Api\DTO\ParseUploadRequest;
 use OpenApi\Attributes as OA;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,7 @@ final readonly class ParseUploadController extends AbstractApiController
         private MessageBusInterface $messageBus,
         private ValidatorInterface $validator,
         private RateLimiterFactoryInterface $parseUploadLimiter,
-        private string $uploadDir,
+        #[Autowire(param: 'app.upload_dir')] private string $uploadDir,
     ) {
     }
 
