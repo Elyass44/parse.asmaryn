@@ -8,8 +8,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 abstract readonly class AbstractApiController
 {
-    /** @param array<string, mixed> $details */
-    protected function errorResponse(string $code, string $message, array $details, int $status): JsonResponse
+    /**
+     * @param array<string, mixed>  $details
+     * @param array<string, string> $headers
+     */
+    protected function errorResponse(string $code, string $message, array $details, int $status, array $headers = []): JsonResponse
     {
         return new JsonResponse([
             'error' => [
@@ -17,6 +20,6 @@ abstract readonly class AbstractApiController
                 'message' => $message,
                 'details' => $details,
             ],
-        ], $status);
+        ], $status, $headers);
     }
 }

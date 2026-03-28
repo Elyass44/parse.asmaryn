@@ -48,6 +48,10 @@ services:
         arguments:
             $uploadDir: '%app.upload_dir%'
 
+    App\UI\Api\Controller\HealthController:
+        arguments:
+            $messengerTransportDsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+
     App\UI\Console\CleanupParseJobsCommand:
         arguments:
             $uploadDir: '%app.upload_dir%'

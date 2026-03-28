@@ -36,10 +36,10 @@
 
 ## Epic 5 — REST API
 
-- [ ] MVP-040 · Nelmio API documentation
-- [ ] MVP-041 · Rate limiting on demo endpoint
-- [ ] MVP-042 · Error response format
-- [ ] MVP-043 · Health check endpoint
+- [x] MVP-040 · Nelmio API documentation
+- [x] MVP-041 · Rate limiting on demo endpoint
+- [x] MVP-042 · Error response format
+- [x] MVP-043 · Health check endpoint
 
 ## Epic 6 — Demo page
 

@@ -5,6 +5,12 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
+    rate_limiter:
+        parse_upload:
+            policy: token_bucket
+            limit: '%env(int:DEMO_RATE_LIMIT)%'
+            rate: { interval: '1 day' }
+
     #esi: true
     #fragments: true
 

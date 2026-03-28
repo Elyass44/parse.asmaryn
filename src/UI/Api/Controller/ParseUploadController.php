@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,6 +26,7 @@ final readonly class ParseUploadController extends AbstractApiController
         private ParseJobRepositoryInterface $parseJobRepository,
         private MessageBusInterface $messageBus,
         private ValidatorInterface $validator,
+        private RateLimiterFactoryInterface $parseUploadLimiter,
         private string $uploadDir,
     ) {
     }
@@ -83,6 +85,21 @@ final readonly class ParseUploadController extends AbstractApiController
     #[Route('/api/parse', name: 'api_parse_upload', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
     {
+        $limiter = $this->parseUploadLimiter->create($request->getClientIp());
+        $limit = $limiter->consume();
+
+        if (!$limit->isAccepted()) {
+            $retryAfter = $limit->getRetryAfter()->getTimestamp() - time();
+
+            return $this->errorResponse(
+                'RATE_LIMITED',
+                'You have reached the daily parse limit. Please try again tomorrow.',
+                [],
+                Response::HTTP_TOO_MANY_REQUESTS,
+                ['Retry-After' => (string) max(0, $retryAfter)],
+            );
+        }
+
         $uploadedFile = $request->files->get('file');
         $webhookUrlStr = $request->request->get('webhook_url') ?: null;
 

@@ -23,7 +23,7 @@ final readonly class ParseStatusController extends AbstractApiController
     #[OA\Get(
         path: '/api/parse/{id}',
         summary: 'Poll the status of a parse job',
-        tags: ['Parse'],
+        tags: ['Parsing'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
         ],

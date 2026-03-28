@@ -20,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final readonly class MistralProvider implements AiProviderInterface
 {
     private const string ENDPOINT = 'https://api.mistral.ai/v1/chat/completions';
-    private const int    TIMEOUT  = 30;
+    private const int    TIMEOUT = 30;
 
     public function __construct(
         private HttpClientInterface $httpClient,
