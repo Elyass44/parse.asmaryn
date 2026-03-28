@@ -9,5 +9,6 @@ final readonly class ParseResumeCommand
     public function __construct(
         public string $jobId,
         public string $filePath,
-    ) {}
+    ) {
+    }
 }

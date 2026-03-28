@@ -19,7 +19,7 @@ final class WebhookUrlType extends StringType
 
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?WebhookUrl
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
@@ -28,7 +28,7 @@ final class WebhookUrlType extends StringType
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 

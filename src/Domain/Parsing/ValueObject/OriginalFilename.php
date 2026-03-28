@@ -22,8 +22,8 @@ final class OriginalFilename
         if (mb_strlen($value) > self::MAX_LENGTH) {
             $extension = pathinfo($value, PATHINFO_EXTENSION);
             $name = pathinfo($value, PATHINFO_FILENAME);
-            $maxName = self::MAX_LENGTH - ($extension !== '' ? mb_strlen($extension) + 1 : 0);
-            $value = mb_substr($name, 0, $maxName) . ($extension !== '' ? '.' . $extension : '');
+            $maxName = self::MAX_LENGTH - ('' !== $extension ? mb_strlen($extension) + 1 : 0);
+            $value = mb_substr($name, 0, $maxName).('' !== $extension ? '.'.$extension : '');
         }
 
         $this->value = $value;

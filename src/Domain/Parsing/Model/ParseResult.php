@@ -46,8 +46,23 @@ class ParseResult
         );
     }
 
-    public function getId(): string { return $this->id; }
-    public function getJobId(): string { return $this->jobId; }
-    public function getPayload(): array { return $this->payload; }
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getJobId(): string
+    {
+        return $this->jobId;
+    }
+
+    public function getPayload(): array
+    {
+        return $this->payload;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 }

@@ -14,11 +14,11 @@ final readonly class WebhookUrl
     {
         $value = trim($value);
 
-        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+        if (false === filter_var($value, FILTER_VALIDATE_URL)) {
             throw new InvalidWebhookUrlException(sprintf('"%s" is not a valid URL.', $value));
         }
 
-        if (strtolower(parse_url($value, PHP_URL_SCHEME)) !== 'https') {
+        if ('https' !== strtolower(parse_url($value, PHP_URL_SCHEME))) {
             throw new InvalidWebhookUrlException('Webhook URL must use HTTPS.');
         }
 

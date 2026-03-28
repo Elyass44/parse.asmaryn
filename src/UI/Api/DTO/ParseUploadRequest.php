@@ -26,8 +26,7 @@ final readonly class ParseUploadRequest
             message: 'The webhook URL must be a valid HTTPS URL.',
             protocols: ['https'],
         )]
-        public ?string       $webhookUrl,
-    )
-    {
+        public ?string $webhookUrl,
+    ) {
     }
 }

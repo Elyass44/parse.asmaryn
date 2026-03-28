@@ -4,31 +4,29 @@ declare(strict_types=1);
 
 namespace App\UI\Api\Controller;
 
-use OpenApi\Attributes as OA;
-use Symfony\Component\Uid\Uuid;
-use App\Domain\Parsing\Model\ParseJob;
-use App\UI\Api\DTO\ParseUploadRequest;
-use Symfony\Component\HttpFoundation\Request;
-use App\Domain\Parsing\ValueObject\WebhookUrl;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Domain\Parsing\ValueObject\OriginalFilename;
-use Symfony\Component\Messenger\MessageBusInterface;
 use App\Application\Parsing\Command\ParseResumeCommand;
-use App\Domain\Parsing\Exception\InvalidWebhookUrlException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Domain\Parsing\Model\ParseJob;
 use App\Domain\Parsing\Repository\ParseJobRepositoryInterface;
+use App\Domain\Parsing\ValueObject\OriginalFilename;
+use App\Domain\Parsing\ValueObject\WebhookUrl;
+use App\UI\Api\DTO\ParseUploadRequest;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final readonly class ParseUploadController
+final readonly class ParseUploadController extends AbstractApiController
 {
     public function __construct(
         private ParseJobRepositoryInterface $parseJobRepository,
-        private MessageBusInterface         $messageBus,
-        private ValidatorInterface          $validator,
-        private string                      $uploadDir,
-    )
-    {
+        private MessageBusInterface $messageBus,
+        private ValidatorInterface $validator,
+        private string $uploadDir,
+    ) {
     }
 
     #[OA\Post(
@@ -85,7 +83,7 @@ final readonly class ParseUploadController
     #[Route('/api/parse', name: 'api_parse_upload', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
     {
-        $uploadedFile  = $request->files->get('file');
+        $uploadedFile = $request->files->get('file');
         $webhookUrlStr = $request->request->get('webhook_url') ?: null;
 
         $dto = new ParseUploadRequest(
@@ -102,58 +100,33 @@ final readonly class ParseUploadController
 
             return $this->errorResponse(
                 'VALIDATION_ERROR',
-                (string)$violations[0]->getMessage(),
+                (string) $violations[0]->getMessage(),
                 $details,
                 Response::HTTP_UNPROCESSABLE_ENTITY,
             );
         }
 
-        $webhookUrl = null;
-        if ($webhookUrlStr !== null) {
-            try {
-                $webhookUrl = new WebhookUrl($webhookUrlStr);
-            } catch (InvalidWebhookUrlException $e) {
-                return $this->errorResponse(
-                    'VALIDATION_ERROR',
-                    $e->getMessage(),
-                    ['webhook_url' => $e->getMessage()],
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                );
-            }
-        }
+        // Validator already enforces HTTPS — safe to construct directly.
+        $webhookUrl = null !== $webhookUrlStr ? new WebhookUrl($webhookUrlStr) : null;
 
         // Capture original filename before moving the file.
         $originalFilename = new OriginalFilename($uploadedFile->getClientOriginalName());
 
         $jobId = Uuid::v7()->toRfc4122();
+        $filePath = sprintf('%s/%s.pdf', rtrim($this->uploadDir, '/'), $jobId);
 
-        if (!is_dir($this->uploadDir)) {
-            mkdir($this->uploadDir, 0755, true);
-        }
-        $uploadedFile->move($this->uploadDir, $jobId . '.pdf');
-
+        // Persist first — if the DB is down we don't want an orphaned file on disk.
         $job = ParseJob::create($jobId, $originalFilename, $webhookUrl);
         $this->parseJobRepository->save($job);
 
-        $this->messageBus->dispatch(
-            new ParseResumeCommand($jobId, $this->uploadDir . '/' . $jobId . '.pdf'),
-        );
+        $uploadedFile->move($this->uploadDir, $jobId.'.pdf');
+
+        $this->messageBus->dispatch(new ParseResumeCommand($jobId, $filePath));
 
         return new JsonResponse([
-            'job_id'   => $jobId,
-            'status'   => $job->getStatus()->value,
-            'poll_url' => '/api/parse/' . $jobId,
+            'job_id' => $jobId,
+            'status' => $job->getStatus()->value,
+            'poll_url' => '/api/parse/'.$jobId,
         ], Response::HTTP_ACCEPTED);
-    }
-
-    private function errorResponse(string $code, string $message, array $details, int $status): JsonResponse
-    {
-        return new JsonResponse([
-            'error' => [
-                'code'    => $code,
-                'message' => $message,
-                'details' => $details,
-            ],
-        ], $status);
     }
 }

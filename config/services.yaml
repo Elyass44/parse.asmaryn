@@ -27,6 +27,17 @@ services:
     App\Domain\Parsing\Repository\ParseResultRepositoryInterface:
         class: App\Infrastructure\Persistence\Repository\DoctrineParseResultRepository
 
+    # TextCleanerInterface → pure domain service, no infrastructure adapter needed
+    App\Domain\Parsing\Service\TextCleanerInterface:
+        class: App\Domain\Parsing\Service\TextCleaner
+
+    # PdfExtractorInterface → infrastructure adapter (smalot/pdfparser)
+    App\Domain\Parsing\Service\PdfExtractorInterface:
+        class: App\Infrastructure\Pdf\PdfExtractor
+
+    # Smalot Parser has no constructor args — autowired automatically
+    Smalot\PdfParser\Parser: ~
+
     App\UI\Api\Controller\ParseUploadController:
         arguments:
             $uploadDir: '%app.upload_dir%'

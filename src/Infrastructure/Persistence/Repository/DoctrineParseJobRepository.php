@@ -10,7 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineParseJobRepository implements ParseJobRepositoryInterface
 {
-    public function __construct(private readonly EntityManagerInterface $em) {}
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
+    }
 
     public function save(ParseJob $job): void
     {

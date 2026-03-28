@@ -71,7 +71,7 @@ class ParseJob
             status: JobStatus::Pending,
             originalFilename: $originalFilename,
             webhookUrl: $webhookUrl,
-            webhookStatus: $webhookUrl !== null ? WebhookStatus::Pending : null,
+            webhookStatus: null !== $webhookUrl ? WebhookStatus::Pending : null,
             errorMessage: null,
             createdAt: $now,
             updatedAt: $now,
@@ -109,15 +109,53 @@ class ParseJob
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): string { return $this->id; }
-    public function getStatus(): JobStatus { return $this->status; }
-    public function getOriginalFilename(): OriginalFilename { return $this->originalFilename; }
-    public function getWebhookUrl(): ?WebhookUrl { return $this->webhookUrl; }
-    public function getWebhookStatus(): ?WebhookStatus { return $this->webhookStatus; }
-    public function getErrorMessage(): ?string { return $this->errorMessage; }
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
-    public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
-    public function isDone(): bool { return $this->status === JobStatus::Done; }
-    public function hasWebhook(): bool { return $this->webhookUrl !== null; }
+    public function getStatus(): JobStatus
+    {
+        return $this->status;
+    }
+
+    public function getOriginalFilename(): OriginalFilename
+    {
+        return $this->originalFilename;
+    }
+
+    public function getWebhookUrl(): ?WebhookUrl
+    {
+        return $this->webhookUrl;
+    }
+
+    public function getWebhookStatus(): ?WebhookStatus
+    {
+        return $this->webhookStatus;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function isDone(): bool
+    {
+        return JobStatus::Done === $this->status;
+    }
+
+    public function hasWebhook(): bool
+    {
+        return null !== $this->webhookUrl;
+    }
 }

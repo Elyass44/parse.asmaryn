@@ -96,6 +96,12 @@ src/
 
 ---
 
+## Git commits
+
+- **No AI attribution** in commit messages — no `Co-Authored-By` lines, no mention of Claude or any AI tool.
+
+---
+
 ## Development commands
 
 ```bash

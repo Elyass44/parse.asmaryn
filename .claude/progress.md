@@ -15,8 +15,8 @@
 ## Epic 2 — PDF ingestion
 
 - [x] MVP-010 · PDF upload endpoint
-- [ ] MVP-011 · PDF text extraction service
-- [ ] MVP-012 · Text cleaning service
+- [x] MVP-011 · PDF text extraction service
+- [x] MVP-012 · Text cleaning service
 
 ## Epic 3 — Async processing pipeline
 
