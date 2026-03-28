@@ -1,0 +1,488 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parse — {{ 'hero.headline'|trans }}{% endblock %}
+
+{% block body %}
+
+{# ── Navbar ─────────────────────────────────────────────────────────────── #}
+<header class="fixed top-0 inset-x-0 z-50 h-14 border-b border-slate-100 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+
+        {# Brand mark: two offset rectangles + wordmark #}
+        <a href="{{ path('home') }}" class="flex items-center gap-2.5 no-underline group">
+            <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="5" width="13" height="15" rx="2.5"
+                      class="fill-violet-300 dark:fill-violet-800 transition-colors group-hover:fill-violet-400 dark:group-hover:fill-violet-700"/>
+                <rect x="7" y="2" width="13" height="15" rx="2.5"
+                      class="fill-violet-600 dark:fill-violet-500 transition-colors group-hover:fill-violet-700 dark:group-hover:fill-violet-400"/>
+            </svg>
+            <span class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Parse</span>
+        </a>
+
+        <div class="flex items-center gap-3">
+
+            {# Language switcher #}
+            <div class="flex items-center text-sm font-semibold">
+                <a href="{{ path('switch_locale', {locale: 'fr'}) }}"
+                   class="px-2.5 py-1 rounded-l-md border border-r-0 transition-colors
+                          {% if app.request.locale == 'fr' %}
+                              bg-violet-600 border-violet-600 text-white
+                          {% else %}
+                              border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400
+                              hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800
+                          {% endif %}">
+                    FR
+                </a>
+                <a href="{{ path('switch_locale', {locale: 'en'}) }}"
+                   class="px-2.5 py-1 rounded-r-md border transition-colors
+                          {% if app.request.locale == 'en' %}
+                              bg-violet-600 border-violet-600 text-white
+                          {% else %}
+                              border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400
+                              hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800
+                          {% endif %}">
+                    EN
+                </a>
+            </div>
+
+            {# Dark / light toggle #}
+            <button id="theme-toggle"
+                    class="p-2 rounded-lg text-slate-500 dark:text-slate-400
+                           hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    aria-label="Toggle theme">
+                <svg class="hidden dark:block w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707.707M6.343 6.343l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <svg class="block dark:hidden w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+
+        </div>
+    </div>
+</header>
+
+{# ── Main split layout ───────────────────────────────────────────────────── #}
+<main class="min-h-screen pt-14 flex flex-col lg:flex-row">
+
+    {# ── Left: Pitch ─────────────────────────────────────────────────────── #}
+    <div class="flex-1 flex items-center px-8 py-16 lg:px-16 xl:px-20 hero-left-bg">
+        <div class="max-w-lg w-full">
+
+            {# Heavy/light contrast: extrabold headline vs light body #}
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-[1.08] tracking-tight mb-5">
+                {{ 'hero.headline'|trans }}
+            </h1>
+
+            {# Violet accent line — a designed separator, not just spacing #}
+            <div class="w-14 h-1 bg-violet-500 rounded-full mb-7"></div>
+
+            <p class="text-lg text-slate-500 dark:text-slate-400 font-light leading-relaxed mb-12">
+                {{ 'hero.subheadline'|trans }}
+            </p>
+
+            {# Numbered bullets — 01/02/03 instead of generic checkmarks #}
+            <ul class="space-y-5 mb-14">
+                {% set bullets = ['hero.bullet_json', 'hero.bullet_instant', 'hero.bullet_webhook'] %}
+                {% for key in bullets %}
+                <li class="flex items-center gap-5 group">
+                    <span class="text-3xl font-black leading-none select-none tabular-nums w-10 shrink-0
+                                 text-violet-100 dark:text-violet-950
+                                 transition-colors group-hover:text-violet-200 dark:group-hover:text-violet-900">
+                        0{{ loop.index }}
+                    </span>
+                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ key|trans }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <a href="/api/doc"
+               class="inline-flex items-center gap-2 font-semibold text-sm
+                      text-violet-600 dark:text-violet-400
+                      hover:text-violet-700 dark:hover:text-violet-300
+                      transition-colors group">
+                {{ 'nav.for_devs'|trans }}
+                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+        </div>
+    </div>
+
+    {# ── Right: Demo widget ──────────────────────────────────────────────── #}
+    <div class="flex-1 flex items-center justify-center px-8 py-16 lg:px-12
+                lg:sticky lg:top-14 lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto
+                lg:border-l border-slate-100 dark:border-slate-800/60">
+
+        <div class="w-full max-w-md">
+
+            {# Card: violet-tinted shadow in light mode gives it brand character #}
+            <div class="bg-white dark:bg-slate-900 rounded-2xl
+                        border border-slate-100 dark:border-slate-800
+                        shadow-[0_8px_48px_-8px_rgba(139,92,246,0.22)]
+                        dark:shadow-[0_8px_48px_-8px_rgba(0,0,0,0.65)]
+                        p-6 lg:p-8">
+
+                {# ── Upload state ──────────────────────────────────────────── #}
+                <div id="state-upload">
+
+                    {# Drop zone: violet-tinted bg at rest — feels like an invitation, not a form #}
+                    <label id="drop-zone"
+                           for="file-input"
+                           class="flex flex-col items-center justify-center gap-4
+                                  bg-violet-50 dark:bg-violet-950/25
+                                  border-2 border-violet-200 dark:border-violet-900
+                                  rounded-xl p-10 cursor-pointer
+                                  hover:bg-violet-100/70 dark:hover:bg-violet-900/35
+                                  hover:border-violet-400 dark:hover:border-violet-700
+                                  transition-all duration-200 group">
+
+                        <div class="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-900/50
+                                    flex items-center justify-center
+                                    group-hover:bg-violet-200 dark:group-hover:bg-violet-800/50
+                                    transition-colors">
+                            <svg class="w-7 h-7 text-violet-500 dark:text-violet-400"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+
+                        <div id="drop-idle" class="text-center">
+                            <p class="font-bold text-slate-800 dark:text-slate-200">{{ 'demo.drop_title'|trans }}</p>
+                            <p class="text-sm text-slate-400 dark:text-slate-500 mt-1 font-normal">{{ 'demo.drop_subtitle'|trans }}</p>
+                        </div>
+
+                        <p id="drop-filename"
+                           class="hidden text-sm font-semibold text-violet-700 dark:text-violet-300 text-center break-all leading-snug"></p>
+                    </label>
+
+                    <input type="file" id="file-input" accept="application/pdf,.pdf" class="sr-only">
+
+                    {# Submit button: hidden until file selected, then slides in #}
+                    <div id="submit-wrap" class="hidden mt-4">
+                        <button id="submit-btn"
+                                class="fade-slide-in w-full py-3.5 px-6 rounded-xl font-bold text-white
+                                       bg-violet-600 hover:bg-violet-700 active:bg-violet-800
+                                       shadow-[0_4px_20px_-4px_rgba(124,58,237,0.5)]
+                                       hover:shadow-[0_4px_24px_-4px_rgba(124,58,237,0.65)]
+                                       transition-all duration-200">
+                            {{ 'demo.submit'|trans }}
+                        </button>
+                    </div>
+
+                </div>
+
+                {# ── Loading state ─────────────────────────────────────────── #}
+                <div id="state-loading" class="hidden py-12 flex flex-col items-center gap-5">
+                    <div class="relative w-14 h-14">
+                        <div class="absolute inset-0 rounded-full border-4
+                                    border-violet-100 dark:border-violet-950"></div>
+                        <div class="absolute inset-0 rounded-full border-4 border-transparent
+                                    border-t-violet-600 dark:border-t-violet-400
+                                    animate-spin"></div>
+                    </div>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        {{ 'demo.analysing'|trans }}
+                    </p>
+                </div>
+
+                {# ── Result state ──────────────────────────────────────────── #}
+                <div id="state-result" class="hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm">
+                                {{ 'demo.result_title'|trans }}
+                            </h3>
+                        </div>
+                        <button id="reset-btn"
+                                class="text-xs font-semibold text-violet-600 dark:text-violet-400
+                                       hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
+                            {{ 'demo.reset'|trans }} →
+                        </button>
+                    </div>
+                    <div id="result-tree"
+                         class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs font-mono
+                                overflow-x-auto max-h-[26rem] overflow-y-auto
+                                border border-slate-100 dark:border-slate-800
+                                leading-relaxed"></div>
+                </div>
+
+                {# ── Error state ───────────────────────────────────────────── #}
+                <div id="state-error" class="hidden">
+                    <div class="rounded-xl bg-red-50 dark:bg-red-950/30
+                                border border-red-100 dark:border-red-900/50 p-4 mb-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-4 h-4 text-red-500 dark:text-red-400 shrink-0 mt-0.5"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p id="error-message"
+                               class="text-red-700 dark:text-red-400 text-sm leading-relaxed font-medium"></p>
+                        </div>
+                    </div>
+                    <button id="error-reset-btn"
+                            class="w-full py-3 px-6 rounded-xl font-bold text-sm
+                                   text-violet-600 dark:text-violet-400
+                                   border-2 border-violet-200 dark:border-violet-800
+                                   hover:bg-violet-50 dark:hover:bg-violet-950/40
+                                   transition-colors">
+                        {{ 'demo.reset'|trans }}
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+{# ── Server-rendered i18n strings for JS ─────────────────────────────────── #}
+<script>
+var MESSAGES = {
+    errorGeneric:     {{ 'demo.error_generic'|trans|json_encode|raw }},
+    errorTimeout:     {{ 'demo.error_timeout'|trans|json_encode|raw }},
+    errorRateLimited: {{ 'demo.error_rate_limited'|trans|json_encode|raw }},
+    errorScannedPdf:  {{ 'demo.error_scanned_pdf'|trans|json_encode|raw }},
+};
+</script>
+
+{# ── App JS ──────────────────────────────────────────────────────────────── #}
+<script>
+(function () {
+
+    // ── Dark mode toggle ────────────────────────────────────────────────────
+    document.getElementById('theme-toggle').addEventListener('click', function () {
+        var isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // ── DOM refs ────────────────────────────────────────────────────────────
+    var dropZone     = document.getElementById('drop-zone');
+    var fileInput    = document.getElementById('file-input');
+    var dropIdle     = document.getElementById('drop-idle');
+    var dropFilename = document.getElementById('drop-filename');
+    var submitWrap   = document.getElementById('submit-wrap');
+    var submitBtn    = document.getElementById('submit-btn');
+
+    var stateUpload  = document.getElementById('state-upload');
+    var stateLoading = document.getElementById('state-loading');
+    var stateResult  = document.getElementById('state-result');
+    var stateError   = document.getElementById('state-error');
+
+    var resultTree   = document.getElementById('result-tree');
+    var errorMessage = document.getElementById('error-message');
+
+    var selectedFile = null;
+
+    // ── State helpers ───────────────────────────────────────────────────────
+    function showState(name) {
+        stateUpload.classList.toggle('hidden',  name !== 'upload');
+        stateLoading.classList.toggle('hidden', name !== 'loading');
+        stateResult.classList.toggle('hidden',  name !== 'result');
+        stateError.classList.toggle('hidden',   name !== 'error');
+    }
+
+    function showError(msg) {
+        errorMessage.textContent = msg;
+        showState('error');
+    }
+
+    // ── File selection ──────────────────────────────────────────────────────
+    function applyFile(file) {
+        if (!file || file.type !== 'application/pdf') return;
+        selectedFile = file;
+        dropIdle.classList.add('hidden');
+        dropFilename.textContent = file.name;
+        dropFilename.classList.remove('hidden');
+        // Reveal submit button with animation
+        submitWrap.classList.remove('hidden');
+        submitBtn.classList.remove('fade-slide-in');
+        void submitBtn.offsetWidth; // force reflow to re-trigger animation
+        submitBtn.classList.add('fade-slide-in');
+    }
+
+    function resetUpload() {
+        selectedFile = null;
+        fileInput.value = '';
+        dropFilename.classList.add('hidden');
+        dropFilename.textContent = '';
+        dropIdle.classList.remove('hidden');
+        submitWrap.classList.add('hidden');
+        showState('upload');
+    }
+
+    fileInput.addEventListener('change', function (e) {
+        if (e.target.files[0]) applyFile(e.target.files[0]);
+    });
+
+    // ── Drag and drop ───────────────────────────────────────────────────────
+    dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('drop-active');
+    });
+
+    ['dragleave', 'dragend'].forEach(function (evt) {
+        dropZone.addEventListener(evt, function () {
+            dropZone.classList.remove('drop-active');
+        });
+    });
+
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('drop-active');
+        var file = e.dataTransfer.files[0];
+        if (file) applyFile(file);
+    });
+
+    // ── Reset buttons ───────────────────────────────────────────────────────
+    document.getElementById('reset-btn').addEventListener('click', resetUpload);
+    document.getElementById('error-reset-btn').addEventListener('click', resetUpload);
+
+    // ── Submit ──────────────────────────────────────────────────────────────
+    submitBtn.addEventListener('click', function () {
+        if (!selectedFile) return;
+        uploadAndPoll(selectedFile);
+    });
+
+    // ── Upload + poll ───────────────────────────────────────────────────────
+    function uploadAndPoll(file) {
+        showState('loading');
+
+        var formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/api/parse', { method: 'POST', body: formData })
+            .then(function (res) {
+                if (res.status === 429) { showError(MESSAGES.errorRateLimited); return null; }
+                if (!res.ok)            { showError(MESSAGES.errorGeneric);     return null; }
+                return res.json();
+            })
+            .then(function (data) {
+                if (data) startPolling(data.job_id);
+            })
+            .catch(function () {
+                showError(MESSAGES.errorGeneric);
+            });
+    }
+
+    function startPolling(jobId) {
+        var start    = Date.now();
+        var timeout  = 60000;
+        var interval = 1500;
+        var inFlight = false;
+
+        var timer = setInterval(function () {
+            if (inFlight) return;
+            if (Date.now() - start > timeout) {
+                clearInterval(timer);
+                showError(MESSAGES.errorTimeout);
+                return;
+            }
+
+            inFlight = true;
+            fetch('/api/parse/' + jobId)
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.status === 'done') {
+                        clearInterval(timer);
+                        renderResult(data.result);
+                    } else if (data.status === 'failed') {
+                        clearInterval(timer);
+                        var code = data.error && data.error.code;
+                        showError(code === 'SCANNED_PDF' ? MESSAGES.errorScannedPdf : MESSAGES.errorGeneric);
+                    }
+                })
+                .catch(function () { /* keep retrying on network hiccup */ })
+                .finally(function () { inFlight = false; });
+        }, interval);
+    }
+
+    // ── Result tree ─────────────────────────────────────────────────────────
+    function renderResult(data) {
+        resultTree.innerHTML = '';
+        resultTree.appendChild(buildNode(data));
+        showState('result');
+    }
+
+    function buildNode(value) {
+        if (value === null || value === undefined) return token('text-slate-400 dark:text-slate-600', 'null');
+        if (typeof value === 'boolean')            return token('text-violet-600 dark:text-violet-400', String(value));
+        if (typeof value === 'number')             return token('text-amber-600 dark:text-amber-400', String(value));
+        if (typeof value === 'string')             return token('text-emerald-700 dark:text-emerald-400', '"' + value + '"');
+        if (Array.isArray(value))                  return buildArray(value);
+        return buildObject(value);
+    }
+
+    function token(cls, text) {
+        var s = document.createElement('span');
+        s.className = cls;
+        s.textContent = text;
+        return s;
+    }
+
+    function buildArray(arr) {
+        if (arr.length === 0) return token('text-slate-500', '[]');
+
+        var wrap    = document.createElement('div');
+        var toggle  = document.createElement('button');
+        var content = document.createElement('div');
+
+        toggle.className = 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 select-none';
+        toggle.textContent = '▾ [' + arr.length + ']';
+        content.className = 'ml-3 pl-3 border-l border-slate-200 dark:border-slate-800 mt-0.5 space-y-0.5';
+
+        arr.forEach(function (item, i) {
+            var row = document.createElement('div');
+            row.className = 'flex items-start gap-1';
+            var idx = document.createElement('span');
+            idx.className = 'text-slate-400 dark:text-slate-600 select-none shrink-0';
+            idx.textContent = i + ': ';
+            var val = document.createElement('div');
+            val.appendChild(buildNode(item));
+            row.appendChild(idx);
+            row.appendChild(val);
+            content.appendChild(row);
+        });
+
+        toggle.addEventListener('click', function () {
+            var collapsed = content.classList.toggle('hidden');
+            toggle.textContent = (collapsed ? '▸' : '▾') + ' [' + arr.length + ']';
+        });
+
+        wrap.appendChild(toggle);
+        wrap.appendChild(content);
+        return wrap;
+    }
+
+    function buildObject(obj) {
+        var keys = Object.keys(obj);
+        if (keys.length === 0) return token('text-slate-500', '{}');
+
+        var wrap = document.createElement('div');
+        wrap.className = 'space-y-0.5';
+
+        keys.forEach(function (key) {
+            var row = document.createElement('div');
+            row.className = 'flex items-start gap-1';
+            var k = document.createElement('span');
+            k.className = 'text-slate-600 dark:text-slate-400 font-semibold shrink-0';
+            k.textContent = key + ': ';
+            var v = document.createElement('div');
+            v.appendChild(buildNode(obj[key]));
+            row.appendChild(k);
+            row.appendChild(v);
+            wrap.appendChild(row);
+        });
+
+        return wrap;
+    }
+
+})();
+</script>
+
+{% endblock %}

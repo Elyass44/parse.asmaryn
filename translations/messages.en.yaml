@@ -1,0 +1,22 @@
+nav:
+    brand: "Parse"
+    for_devs: "For developers"
+
+hero:
+    headline: "Your résumés, structured in seconds"
+    subheadline: "Upload a PDF and get clean, structured candidate data — ready to plug into your ATS. No manual parsing, no formatting surprises."
+    bullet_json: "Structured JSON"
+    bullet_instant: "Instant results"
+    bullet_webhook: "Webhook delivery"
+
+demo:
+    drop_title: "Drop your PDF here"
+    drop_subtitle: "or click to select"
+    submit: "Parse résumé"
+    analysing: "Analysing your résumé…"
+    result_title: "Result"
+    reset: "Parse another résumé"
+    error_generic: "Something went wrong. Please try again."
+    error_timeout: "Analysis is taking longer than expected. Please try again."
+    error_rate_limited: "You've reached the daily limit of 5 parses. Come back tomorrow!"
+    error_scanned_pdf: "This PDF doesn't contain extractable text. Please check it's not a scanned document."

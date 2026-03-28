@@ -1,0 +1,22 @@
+nav:
+    brand: "Parse"
+    for_devs: "Pour les développeurs"
+
+hero:
+    headline: "Vos CV, structurés en quelques secondes"
+    subheadline: "Importez un PDF et obtenez des données candidat propres et structurées — prêtes à intégrer dans votre ATS. Fini le parsing manuel, fini les surprises de mise en forme."
+    bullet_json: "JSON structuré"
+    bullet_instant: "Résultats instantanés"
+    bullet_webhook: "Livraison par webhook"
+
+demo:
+    drop_title: "Déposez votre PDF ici"
+    drop_subtitle: "ou cliquez pour sélectionner"
+    submit: "Analyser le CV"
+    analysing: "Analyse en cours…"
+    result_title: "Résultat"
+    reset: "Analyser un autre CV"
+    error_generic: "Une erreur est survenue. Veuillez réessayer."
+    error_timeout: "L'analyse prend plus de temps que prévu. Veuillez réessayer."
+    error_rate_limited: "Vous avez atteint la limite de 5 analyses par jour. Revenez demain !"
+    error_scanned_pdf: "Ce PDF ne contient pas de texte extractible. Vérifiez qu'il n'est pas scanné."
