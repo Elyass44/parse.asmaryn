@@ -19,4 +19,9 @@ final class ScannedPdfException extends \DomainException
             )
         );
     }
+
+    public static function fromEmptyDocument(): self
+    {
+        return new self('The PDF contains no pages and cannot be processed.');
+    }
 }

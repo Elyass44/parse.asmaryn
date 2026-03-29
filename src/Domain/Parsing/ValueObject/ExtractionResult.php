@@ -19,6 +19,7 @@ final readonly class ExtractionResult
         public int $tokensCompletion,
         public int $tokensTotal,
         public string $provider,
+        public string $aiModel,
         public int $aiDurationMs,
     ) {
     }

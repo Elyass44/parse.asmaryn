@@ -27,6 +27,11 @@ final class PdfExtractor implements PdfExtractorInterface
     public function extract(string $filePath): string
     {
         $pdf = $this->parser->parseFile($filePath);
+
+        if (0 === count($pdf->getPages())) {
+            throw ScannedPdfException::fromEmptyDocument();
+        }
+
         $raw = $pdf->getText();
 
         $normalised = $this->normalise($raw);

@@ -9,6 +9,8 @@ use App\Application\Parsing\WebhookSenderInterface;
 use App\Domain\Parsing\Model\JobStatus;
 use App\Domain\Parsing\Repository\ParseJobRepositoryInterface;
 use App\Domain\Parsing\Repository\ParseResultRepositoryInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -23,6 +25,7 @@ final readonly class NotifyWebhookHandler
         private ParseJobRepositoryInterface $parseJobRepository,
         private ParseResultRepositoryInterface $parseResultRepository,
         private WebhookSenderInterface $webhookSender,
+        #[Autowire(service: 'monolog.logger.parsing')] private LoggerInterface $logger,
     ) {
     }
 
@@ -41,6 +44,8 @@ final readonly class NotifyWebhookHandler
 
         $job->markWebhookDelivered();
         $this->parseJobRepository->save($job);
+
+        $this->logger->info('parse_job.webhook_delivered', ['job_id' => $command->jobId]);
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Domain\Parsing\ValueObject\OriginalFilename;
 use App\Domain\Parsing\ValueObject\WebhookUrl;
 use App\UI\Api\DTO\ParseUploadRequest;
 use OpenApi\Attributes as OA;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +30,7 @@ final readonly class ParseUploadController extends AbstractApiController
         private ValidatorInterface $validator,
         private RateLimiterFactoryInterface $parseUploadLimiter,
         #[Autowire(param: 'app.upload_dir')] private string $uploadDir,
+        #[Autowire(service: 'monolog.logger.parsing')] private LoggerInterface $logger,
     ) {
     }
 
@@ -142,6 +144,8 @@ final readonly class ParseUploadController extends AbstractApiController
         $uploadedFile->move($this->uploadDir, $jobId.'.pdf');
 
         $this->messageBus->dispatch(new ParseResumeCommand($jobId, $filePath));
+
+        $this->logger->info('parse_job.created', ['job_id' => $jobId]);
 
         return new JsonResponse([
             'job_id' => $jobId,

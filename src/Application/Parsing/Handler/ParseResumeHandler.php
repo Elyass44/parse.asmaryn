@@ -16,6 +16,8 @@ use App\Domain\Parsing\Service\AiProviderInterface;
 use App\Domain\Parsing\Service\PdfExtractorInterface;
 use App\Domain\Parsing\Service\SchemaValidatorInterface;
 use App\Domain\Parsing\Service\TextCleanerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -38,6 +40,7 @@ final readonly class ParseResumeHandler
         private AiProviderInterface $aiProvider,
         private SchemaValidatorInterface $schemaValidator,
         private MessageBusInterface $messageBus,
+        #[Autowire(service: 'monolog.logger.parsing')] private LoggerInterface $logger,
     ) {
     }
 
@@ -49,8 +52,12 @@ final readonly class ParseResumeHandler
             return; // idempotency guard
         }
 
+        $startNs = hrtime(true);
+
         $job->markAsProcessing();
         $this->parseJobRepository->save($job);
+
+        $this->logger->info('parse_job.processing_started', ['job_id' => $command->jobId]);
 
         try {
             $duplicate = null !== $job->getContentHash()
@@ -62,6 +69,10 @@ final readonly class ParseResumeHandler
             }
 
             if (null !== $duplicate && null !== $existing) {
+                $this->logger->info('parse_job.dedup_hit', [
+                    'job_id' => $command->jobId,
+                    'reused_job_id' => $duplicate->getId(),
+                ]);
                 $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $existing->getPayload(), $existing->toExtractionResult());
             } else {
                 $text = $this->pdfExtractor->extract($command->filePath);
@@ -70,22 +81,56 @@ final readonly class ParseResumeHandler
                 $extraction = $this->aiProvider->extract($cleaned);
                 $payload = $this->schemaValidator->validate($extraction->payload);
 
+                $this->logger->info('parse_job.ai_extraction_done', [
+                    'job_id' => $command->jobId,
+                    'ai_provider' => $extraction->provider,
+                    'ai_model' => $extraction->aiModel,
+                    'ai_duration_ms' => $extraction->aiDurationMs,
+                    'tokens_total' => $extraction->tokensTotal,
+                    'was_truncated' => $cleaned->wasTruncated,
+                ]);
+
                 $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload, $extraction);
             }
 
             $this->parseResultRepository->save($result);
 
+            $durationMs = (int) round((hrtime(true) - $startNs) / 1_000_000);
             $job->markAsDone();
             $this->parseJobRepository->save($job);
+
+            $this->logger->info('parse_job.completed', [
+                'job_id' => $command->jobId,
+                'status' => 'done',
+                'duration_ms' => $durationMs,
+            ]);
         } catch (ScannedPdfException $e) {
             $job->markAsFailed($e->getMessage(), 'SCANNED_PDF');
             $this->parseJobRepository->save($job);
+            $this->logger->warning('parse_job.failed', [
+                'job_id' => $command->jobId,
+                'status' => 'failed',
+                'error_code' => 'SCANNED_PDF',
+                'duration_ms' => (int) round((hrtime(true) - $startNs) / 1_000_000),
+            ]);
         } catch (AiProviderException|InvalidAiOutputException $e) {
             $job->markAsFailed($e->getMessage(), 'PROCESSING_ERROR');
             $this->parseJobRepository->save($job);
+            $this->logger->error('parse_job.failed', [
+                'job_id' => $command->jobId,
+                'status' => 'failed',
+                'error_code' => 'PROCESSING_ERROR',
+                'duration_ms' => (int) round((hrtime(true) - $startNs) / 1_000_000),
+            ]);
         } catch (\Throwable $e) {
             $job->markAsFailed($e->getMessage(), 'PROCESSING_ERROR');
             $this->parseJobRepository->save($job);
+            $this->logger->error('parse_job.failed', [
+                'job_id' => $command->jobId,
+                'status' => 'failed',
+                'error_code' => 'PROCESSING_ERROR',
+                'duration_ms' => (int) round((hrtime(true) - $startNs) / 1_000_000),
+            ]);
         }
 
         if ($job->hasWebhook()) {

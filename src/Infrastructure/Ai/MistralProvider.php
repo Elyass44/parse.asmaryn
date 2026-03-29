@@ -79,6 +79,7 @@ final readonly class MistralProvider implements AiProviderInterface
                 tokensCompletion: (int) ($usage['completion_tokens'] ?? 0),
                 tokensTotal: (int) ($usage['total_tokens'] ?? 0),
                 provider: 'mistral',
+                aiModel: $this->model,
                 aiDurationMs: $aiDurationMs,
             );
         } catch (TimeoutExceptionInterface) {

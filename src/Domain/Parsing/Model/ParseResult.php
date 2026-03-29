@@ -133,6 +133,7 @@ class ParseResult
             tokensCompletion: 0,
             tokensTotal: 0,
             provider: $this->aiProvider ?? '',
+            aiModel: '',
             aiDurationMs: 0,
         );
     }

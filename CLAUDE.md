@@ -1,6 +1,6 @@
 # Parse — Resume Parser
 
-A Symfony 7.4 API that accepts PDF résumé uploads, extracts structured data via Mistral AI, and delivers results synchronously (polling) or asynchronously (webhook). Deployable on a VPS via Docker + Traefik.
+A Symfony 7.4 API that accepts PDF résumé uploads, extracts structured data via **Mistral AI or OpenAI** (runtime-switchable), and delivers results synchronously (polling) or asynchronously (webhook). Deployable on a VPS via Docker + Traefik.
 
 Frontend uses **Tailwind CSS** (installed via Symfony AssetMapper). Use Tailwind utility classes for all UI work — no custom CSS unless strictly necessary.
 
@@ -17,23 +17,32 @@ The project follows **Domain-Driven Design** with a four-layer structure:
 src/
 ├── Domain/          # Pure business logic — no framework dependencies
 │   └── Parsing/
-│       ├── Model/          # Entities with identity and lifecycle (ParseJob, ParseResult)
-│       ├── ValueObject/    # Immutable typed wrappers (WebhookUrl, OriginalFilename)
+│       ├── Model/          # Entities with identity and lifecycle (ParseJob, ParseResult, JobStatus, WebhookStatus)
+│       ├── ValueObject/    # Immutable typed wrappers (WebhookUrl, OriginalFilename, CleanedText, ExtractionResult)
 │       ├── Repository/     # Repository interfaces (not implementations)
-│       ├── Service/        # Domain services (PdfExtractor, TextCleaner, SchemaValidator…)
+│       ├── Service/        # Domain services + interfaces (TextCleaner, SchemaValidator, AiProviderInterface…)
 │       └── Exception/      # Domain exceptions (ScannedPdfException, InvalidAiOutputException…)
 ├── Application/     # Use case orchestration — coordinates domain objects, no business logic
 │   └── Parsing/
 │       ├── Command/        # Messenger messages (ParseResumeCommand, NotifyWebhookCommand)
-│       └── Handler/        # Messenger handlers (ParseResumeHandler, NotifyWebhookHandler)
+│       ├── Handler/        # Messenger handlers (ParseResumeHandler, NotifyWebhookHandler)
+│       └── WebhookSenderInterface.php
 ├── Infrastructure/  # Adapters for external systems
-│   ├── Ai/                 # MistralProvider (implements AiProviderInterface)
-│   ├── Persistence/        # Doctrine repositories, custom DBAL types, migrations
-│   └── Http/               # Symfony HttpClient wrappers
-└── UI/              # Entry points — HTTP only
-    └── Api/
-        ├── Controller/     # Slim controllers — validate input, dispatch commands, return response
-        └── DTO/            # Request/response DTOs with OpenAPI annotations
+│   ├── Ai/                 # MistralProvider, OpenAiProvider, AiProviderSelector, ExtractionPrompt
+│   ├── Http/               # WebhookSender (implements WebhookSenderInterface)
+│   ├── Messenger/          # WebhookFailureSubscriber (dead-letter handling)
+│   ├── Pdf/                # PdfExtractor (implements PdfExtractorInterface, uses smalot/pdfparser)
+│   └── Persistence/        # Doctrine repositories, custom DBAL types, migrations
+└── UI/              # Entry points
+    ├── Api/
+    │   ├── Controller/     # ParseUploadController, ParseStatusController, HealthController, AbstractApiController
+    │   ├── DTO/            # ParseUploadRequest (with OpenAPI annotations)
+    │   └── EventSubscriber/ # ApiExceptionSubscriber (maps domain exceptions → JSON error responses)
+    ├── Web/
+    │   ├── Controller/     # HomeController (demo page), LocaleController (/switch-locale/{locale})
+    │   └── EventSubscriber/ # LocaleSubscriber
+    └── Console/
+        └── CleanupParseJobsCommand.php
 ```
 
 ### Layer responsibilities
@@ -49,7 +58,7 @@ src/
 
 - **Entities live in `Domain/Parsing/Model/`** with Doctrine `#[ORM\...]` attributes. Pragmatic standard for Symfony — Doctrine attributes are metadata, not business logic.
 - **No other framework imports in the domain.** No Symfony services, no HTTP layer, no Messenger.
-- **Application handlers orchestrate, domain services decide.** A handler calls `PdfExtractor`, `MistralProvider`, `ParseJob::markAsDone()` — it does not contain if/else business rules itself.
+- **Application handlers orchestrate, domain services decide.** A handler calls `PdfExtractor`, the AI provider, `ParseJob::markAsDone()` — it does not contain if/else business rules itself.
 - **Repository interfaces** declared in `Domain`, implemented in `Infrastructure/Persistence`.
 - **Controllers do one thing**: validate HTTP input → dispatch a command or call an application service → return a response.
 
@@ -120,8 +129,11 @@ make lint        # Run PHP CS Fixer + PHPStan
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL DSN | `pgsql://db_user:db_password@postgres:5432/db_name` |
 | `MESSENGER_TRANSPORT_DSN` | RabbitMQ DSN for async transport | `amqp://guest:guest@rabbitmq:5672/%2f/messages` |
+| `AI_PROVIDER` | Active AI provider: `mistral` or `openai` | `mistral` |
 | `MISTRAL_API_KEY` | Mistral API key | — |
 | `MISTRAL_MODEL` | Mistral model name | `mistral-small-latest` |
+| `OPENAI_API_KEY` | OpenAI API key | — |
+| `OPENAI_MODEL` | OpenAI model name | `gpt-4o-mini` |
 | `WEBHOOK_SECRET` | HMAC-SHA256 signing key for `X-Signature` | — |
 | `DEMO_RATE_LIMIT` | Max parse requests per IP per day | `5` |
 | `LOG_LEVEL` | Monolog minimum log level | `info` |
@@ -137,6 +149,8 @@ make lint        # Run PHP CS Fixer + PHPStan
 | `GET` | `/api/health` | Liveness check (DB + queue) |
 | `GET` | `/api/doc` | Swagger UI (dev only) |
 | `GET` | `/api/doc.json` | Raw OpenAPI spec (dev only) |
+| `GET` | `/` | Demo page (HTML) |
+| `GET` | `/switch-locale/{locale}` | Switch UI language (EN/FR), stores in session |
 
 ### Error format (all errors)
 
@@ -160,20 +174,25 @@ Error codes: `VALIDATION_ERROR` (422), `SCANNED_PDF` (422), `NOT_FOUND` (404), `
 POST /api/parse
   └─► ParseUploadController
         ├─ Validate file (magic bytes, size, MIME)
+        ├─ Compute SHA-256 content hash
         ├─ Store to var/uploads/{job_id}.pdf
-        ├─ Persist ParseJob (status=pending)
+        ├─ Persist ParseJob (status=pending, contentHash=SHA-256)
         └─ Dispatch ParseResumeCommand → async transport (RabbitMQ)
               └─► ParseResumeHandler (worker container)
+                    ├─ Mark job as processing (set startedAt)
+                    ├─ [Dedup check] If contentHash matches a done job → reuse its ParseResult (no AI call)
                     ├─ PdfExtractor::extract()       → raw text
                     ├─ TextCleaner::clean()          → normalised text (≤3000 chars)
-                    ├─ MistralProvider::extract()    → raw JSON
-                    ├─ SchemaValidator::validate()   → typed DTO
-                    ├─ Persist ParseResult
+                    ├─ AiProvider::extract()         → raw JSON + token counts + duration
+                    │    (AiProviderSelector routes to MistralProvider or OpenAiProvider via AI_PROVIDER)
+                    ├─ SchemaValidator::validate()   → typed ExtractionResult VO
+                    ├─ Persist ParseResult (payload, tokensPrompt/Completion/Total, aiProvider, aiDurationMs)
                     ├─ ParseJob status = done
                     └─ Dispatch NotifyWebhookCommand (if webhook_url set)
                           └─► NotifyWebhookHandler
                                 ├─ POST JSON + X-Signature to webhook_url
                                 └─ ParseJob.webhook_status = delivered | failed
+                                   (3 retries with exponential backoff → dead-letter → WebhookFailureSubscriber)
 ```
 
 ---
@@ -217,6 +236,31 @@ prod/
 
 ---
 
+## Key domain model fields
+
+**`ParseJob`** — tracks the lifecycle of one upload:
+- `id` (UUID), `status` (JobStatus enum), `originalFilename` (VO)
+- `contentHash` — SHA-256 of the uploaded PDF, used for deduplication
+- `startedAt` — set when the worker begins processing (enables duration measurement)
+- `webhookUrl` (nullable VO), `webhookStatus` (nullable WebhookStatus enum)
+- `errorMessage`, `errorCode`
+
+**`ParseResult`** — stores the AI extraction output:
+- `id` (UUID), `jobId` (FK to ParseJob), `payload` (JSON)
+- `tokensPrompt`, `tokensCompletion`, `tokensTotal` — usage stats from AI provider
+- `aiProvider` — `"mistral"` or `"openai"` (which provider produced this result)
+- `aiDurationMs` — AI call latency in milliseconds
+
+**`ExtractionResult`** (Value Object) — the VO that flows from `AiProvider` through `SchemaValidator` into `ParseResult`. Bundles parsed payload + token counts + provider + duration. Immutable.
+
+---
+
 ## Out of scope (MVP)
 
-Authentication, multi-tenancy, billing, BYOK, multi-provider AI, OCR, backoffice UI, skill taxonomy, CV scoring.
+Authentication, multi-tenancy, billing, BYOK, OCR, backoffice UI, skill taxonomy, CV scoring.
+
+## Not yet implemented (Epic 7)
+
+- **MVP-060** · File validation hardening (stricter magic bytes / MIME checks)
+- **MVP-061** · Logging & observability (structured logs, request IDs)
+- **MVP-062** · README & local setup guide

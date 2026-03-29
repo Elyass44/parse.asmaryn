@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UI\Api\DTO;
 
+use App\UI\Api\Validator\PdfMagicBytes;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,6 +21,7 @@ final readonly class ParseUploadRequest
             maxSizeMessage: 'The file exceeds the maximum allowed size of 5MB.',
             mimeTypesMessage: 'The uploaded file is not a valid PDF.',
         )]
+        #[PdfMagicBytes]
         public ?UploadedFile $file,
 
         #[Assert\Url(

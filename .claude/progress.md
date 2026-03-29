@@ -52,14 +52,15 @@
 - [x] MVP-051 · Polling logic
 - [x] MVP-052 · Demo page rate limit UX
 
+## Epic 7 — Hardening & limits
+
+- [x] MVP-060 · File validation hardening
+- [x] MVP-061 · Logging & observability
+- [x] MVP-062 · README & local setup guide
+
 ## Epic 8 — Stats & deduplication
 
 - [x] MVP-070 · Token usage tracking (tokens_prompt/completion/total + ai_provider on parse_result)
 - [x] MVP-071 · Processing duration tracking (started_at on parse_job)
 - [x] MVP-072 · Resume deduplication via content hash (SHA-256 on parse_job, reuse on upload)
 
-## Epic 7 — Hardening & limits
-
-- [ ] MVP-060 · File validation hardening
-- [ ] MVP-061 · Logging & observability
-- [ ] MVP-062 · README & local setup guide
