@@ -13,4 +13,8 @@ interface ParseResultRepositoryInterface
     public function findByJobId(string $jobId): ?ParseResult;
 
     public function deleteByJobId(string $jobId): void;
+
+    public function wipePayloadsOlderThan(\DateTimeImmutable $threshold): int;
+
+    public function countPayloadsOlderThan(\DateTimeImmutable $threshold): int;
 }

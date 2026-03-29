@@ -53,7 +53,11 @@ final readonly class ParseStatusController extends AbstractApiController
 
         if (JobStatus::Done === $job->getStatus()) {
             $result = $this->parseResultRepository->findByJobId($id);
-            $data['result'] = $result?->getPayload() ?? [];
+            if (null !== $result?->getPayloadDeletedAt()) {
+                $data['result_expired'] = true;
+            } else {
+                $data['result'] = $result?->getPayload() ?? [];
+            }
         }
 
         if (JobStatus::Failed === $job->getStatus()) {

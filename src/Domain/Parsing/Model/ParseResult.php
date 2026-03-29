@@ -19,9 +19,9 @@ class ParseResult
     #[ORM\Column(type: 'string', length: 36)]
     private string $jobId;
 
-    /** @var array<string, mixed> */
-    #[ORM\Column(type: 'json')]
-    private array $payload;
+    /** @var array<string, mixed>|null */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $payload;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $tokensPrompt;
@@ -37,6 +37,9 @@ class ParseResult
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $aiDurationMs;
+
+    #[ORM\Column(type: 'datetimetz_immutable', nullable: true)]
+    private ?\DateTimeImmutable $payloadDeletedAt;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
@@ -61,6 +64,7 @@ class ParseResult
         $this->tokensTotal = $tokensTotal;
         $this->aiProvider = $aiProvider;
         $this->aiDurationMs = $aiDurationMs;
+        $this->payloadDeletedAt = null;
         $this->createdAt = $createdAt;
     }
 
@@ -90,10 +94,25 @@ class ParseResult
         return $this->jobId;
     }
 
-    /** @return array<string, mixed> */
-    public function getPayload(): array
+    /** @return array<string, mixed>|null */
+    public function getPayload(): ?array
     {
         return $this->payload;
+    }
+
+    public function getPayloadDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->payloadDeletedAt;
+    }
+
+    /**
+     * DDD note: this is a domain operation — the decision to wipe personal data
+     * and record when it happened belongs on the entity, not in application code.
+     */
+    public function wipePayload(\DateTimeImmutable $at): void
+    {
+        $this->payload = null;
+        $this->payloadDeletedAt = $at;
     }
 
     public function getTokensPrompt(): ?int
@@ -128,7 +147,7 @@ class ParseResult
     public function toExtractionResult(): ExtractionResult
     {
         return new ExtractionResult(
-            payload: $this->payload,
+            payload: $this->payload ?? [],
             tokensPrompt: 0,
             tokensCompletion: 0,
             tokensTotal: 0,
