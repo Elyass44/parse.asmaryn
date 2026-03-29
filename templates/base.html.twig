@@ -24,5 +24,75 @@
     </head>
     <body class="font-sans bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
         {% block body %}{% endblock %}
+
+        {# ───────────────────────────── FOOTER ───────────────────────────── #}
+        {% block site_footer %}
+        <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
+                        {{ 'footer.tagline'|trans }}
+                    </p>
+                    <nav class="flex items-center gap-4 flex-wrap justify-center" aria-label="Legal">
+                        <a href="{{ path('web_privacy') }}" class="text-xs text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            {{ 'footer.privacy'|trans }}
+                        </a>
+                        <span class="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
+                        <a href="{{ path('web_terms') }}" class="text-xs text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            {{ 'footer.terms'|trans }}
+                        </a>
+                        <span class="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
+                        <a href="{{ path('web_dpa') }}" class="text-xs text-slate-500 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                            {{ 'footer.dpa'|trans }}
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </footer>
+        {% endblock %}
+
+        {# ─────────────────────── GDPR CONSENT BANNER ─────────────────────── #}
+        {# TODO: If analytics or third-party scripts are ever added, update this banner text
+           and the Privacy Policy BEFORE enabling those scripts. #}
+        {% block consent_banner %}
+        <div id="gdpr-banner"
+             role="dialog"
+             aria-modal="true"
+             aria-label="{{ 'consent.dismiss'|trans }}"
+             class="fixed bottom-0 inset-x-0 z-40 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm shadow-lg"
+             style="display:none">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
+                    <p class="text-sm text-slate-600 dark:text-slate-400 flex-1">
+                        {{ 'consent.message'|trans }}
+                        <a href="{{ path('web_privacy') }}" class="underline text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 ml-1">{{ 'consent.learn_more'|trans }}</a>
+                    </p>
+                    <button id="gdpr-dismiss"
+                            class="flex-shrink-0 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 active:bg-violet-800 text-white text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950">
+                        {{ 'consent.dismiss'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script>
+        (function () {
+            var banner = document.getElementById('gdpr-banner');
+            var dismiss = document.getElementById('gdpr-dismiss');
+            if (!banner || !dismiss) return;
+            if (!localStorage.getItem('gdpr_consent')) {
+                banner.style.display = '';
+                dismiss.focus();
+            }
+            function hide() {
+                localStorage.setItem('gdpr_consent', '1');
+                banner.style.display = 'none';
+            }
+            dismiss.addEventListener('click', hide);
+            dismiss.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hide(); }
+            });
+        })();
+        </script>
+        {% endblock %}
     </body>
 </html>

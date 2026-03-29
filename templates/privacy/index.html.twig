@@ -1,0 +1,147 @@
+{% extends 'legal/base.html.twig' %}
+
+{% block title %}{{ 'privacy.page_title'|trans }}{% endblock %}
+
+{% block legal_content %}
+
+<div class="space-y-10">
+
+    {# ─── Header ─── #}
+    <div class="space-y-2 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {{ 'privacy.title'|trans }}
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            {{ 'legal.last_updated'|trans }} : {{ 'privacy.last_updated_value'|trans }}
+        </p>
+        <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">
+            {{ 'privacy.intro'|trans }}
+        </p>
+    </div>
+
+    {# ─── Section 1 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s1_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s1_p1'|trans }}</p>
+        <dl class="grid sm:grid-cols-2 gap-3">
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <dt class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">{{ 'privacy.s1_entity_label'|trans }}</dt>
+                <dd class="text-sm text-slate-700 dark:text-slate-300">{{ 'privacy.s1_entity_value'|trans }}</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <dt class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">{{ 'privacy.s1_contact_label'|trans }}</dt>
+                <dd class="text-sm text-slate-700 dark:text-slate-300">{{ 'privacy.s1_contact_value'|trans }}</dd>
+            </div>
+        </dl>
+    </section>
+
+    {# ─── Section 2 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s2_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s2_intro'|trans }}</p>
+        <div class="space-y-3">
+            {% for i in 1..4 %}
+            <div class="flex gap-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <span class="mt-0.5 w-8 h-8 flex-shrink-0 rounded-lg bg-violet-100 dark:bg-violet-950/60 flex items-center justify-center text-xs font-bold text-violet-700 dark:text-violet-400">{{ i }}</span>
+                <div>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ ('privacy.s2_item' ~ i ~ '_title')|trans }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{{ ('privacy.s2_item' ~ i ~ '_body')|trans }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# ─── Section 3 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s3_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s3_p1'|trans }}</p>
+    </section>
+
+    {# ─── Section 4 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s4_title'|trans }}</h2>
+        <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+            <table class="w-full text-sm">
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                    {% set rows = [
+                        ['s4_payload_label', 's4_payload_value'],
+                        ['s4_pdf_label',     's4_pdf_value'],
+                        ['s4_metadata_label','s4_metadata_value'],
+                        ['s4_logs_label',    's4_logs_value'],
+                    ] %}
+                    {% for row in rows %}
+                    <tr class="{% if loop.even %}bg-slate-50 dark:bg-slate-900/50{% endif %}">
+                        <td class="px-4 py-3 font-semibold text-slate-700 dark:text-slate-300 w-2/5 align-top">{{ ('privacy.' ~ row[0])|trans }}</td>
+                        <td class="px-4 py-3 text-slate-500 dark:text-slate-400 leading-relaxed">{{ ('privacy.' ~ row[1])|trans }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {# ─── Section 5 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s5_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s5_p1'|trans }}</p>
+        <div class="rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-900/50 p-5 space-y-2">
+            <p class="text-sm font-semibold text-violet-800 dark:text-violet-300">{{ 'privacy.s5_ai_title'|trans }}</p>
+            <p class="text-sm text-violet-700 dark:text-violet-400 leading-relaxed">{{ 'privacy.s5_ai_p1'|trans }}</p>
+            <div class="flex flex-wrap gap-2 pt-1">
+                <a href="https://mistral.ai/terms/" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-xs font-medium text-violet-700 dark:text-violet-400 hover:underline">
+                    Mistral AI
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <span class="text-violet-300 dark:text-violet-700">·</span>
+                <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-xs font-medium text-violet-700 dark:text-violet-400 hover:underline">
+                    OpenAI
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 italic">{{ 'privacy.s5_no_analytics'|trans }}</p>
+    </section>
+
+    {# ─── Section 6 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s6_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s6_p1'|trans }}</p>
+        <ul class="space-y-2">
+            {% for i in 1..5 %}
+            <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {{ ('privacy.s6_right' ~ i)|trans }}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            {{ 'privacy.s6_contact'|trans }}
+            <span class="font-medium text-slate-700 dark:text-slate-300 ml-1">{{ 'privacy.s6_contact_value'|trans }}</span>
+        </p>
+    </section>
+
+    {# ─── Section 7 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s7_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s7_p1'|trans }}</p>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s7_p2'|trans }}</p>
+    </section>
+
+    {# ─── Section 8 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'privacy.s8_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'privacy.s8_p1'|trans }}</p>
+        <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-1">
+            <p class="text-sm text-slate-700 dark:text-slate-300">{{ 'privacy.s8_contact_value'|trans }}</p>
+            <p class="text-sm text-slate-700 dark:text-slate-300">{{ 'privacy.s8_address_value'|trans }}</p>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

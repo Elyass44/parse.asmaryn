@@ -1,0 +1,104 @@
+{% extends 'legal/base.html.twig' %}
+
+{% block title %}{{ 'terms.page_title'|trans }}{% endblock %}
+
+{% block legal_content %}
+
+<div class="space-y-10">
+
+    {# ─── Header ─── #}
+    <div class="space-y-2 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {{ 'terms.title'|trans }}
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            {{ 'legal.last_updated'|trans }} : {{ 'terms.last_updated_value'|trans }}
+        </p>
+        <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed pt-2">
+            {{ 'terms.intro'|trans }}
+        </p>
+    </div>
+
+    {# ─── Section 1 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s1_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s1_p1'|trans }}</p>
+        <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5">
+            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{{ 'terms.s1_not_title'|trans }}</p>
+            <ul class="space-y-2">
+                {% for i in 1..4 %}
+                <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-400 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    {{ ('terms.s1_not' ~ i)|trans }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    {# ─── Section 2 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s2_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s2_p1'|trans }}</p>
+        <ul class="space-y-2">
+            {% for i in 1..4 %}
+            <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                {{ ('terms.s2_item' ~ i)|trans }}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    {# ─── Section 3 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s3_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s3_p1'|trans }}</p>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s3_p2'|trans }}</p>
+    </section>
+
+    {# ─── Section 4 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s4_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s4_p1'|trans }}</p>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s4_p2'|trans }}</p>
+    </section>
+
+    {# ─── Section 5 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s5_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s5_p1'|trans }}</p>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+            {{ 'terms.s5_p2'|trans }}
+            <a href="{{ path('web_privacy') }}" class="text-violet-600 dark:text-violet-400 hover:underline ml-1">{{ 'footer.privacy'|trans }}</a>.
+        </p>
+    </section>
+
+    {# ─── Section 6 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s6_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s6_p1'|trans }}</p>
+    </section>
+
+    {# ─── Section 7 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s7_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s7_p1'|trans }}</p>
+    </section>
+
+    {# ─── Section 8 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s8_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s8_p1'|trans }}</p>
+        <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+            <p class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ 'terms.s8_contact_value'|trans }}</p>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

@@ -26,3 +26,201 @@ demo:
     error_timeout: "L'analyse prend plus de temps que prévu. Veuillez réessayer."
     error_rate_limited: "Vous avez atteint la limite de 5 analyses par jour. Revenez demain !"
     error_scanned_pdf: "Ce PDF ne contient pas de texte extractible. Vérifiez qu'il n'est pas scanné."
+
+footer:
+    tagline: "Les données CV sont supprimées après 30 jours. Les métadonnées des jobs sont conservées à des fins d'audit."
+    privacy: "Politique de confidentialité"
+    terms: "Conditions d'utilisation"
+    dpa: "Accord de traitement des données"
+
+consent:
+    message: "Ce site utilise un cookie de session pour mémoriser votre préférence de langue. Aucun cookie de suivi ni outil d'analyse n'est utilisé."
+    learn_more: "En savoir plus"
+    dismiss: "J'ai compris"
+
+legal:
+    back_home: "Retour à l'accueil"
+    last_updated: "Dernière mise à jour"
+    print: "Imprimer / Télécharger"
+    to_fill_notice: "Ce champ doit être complété avant la mise en ligne."
+
+privacy:
+    page_title: "Politique de confidentialité — Parse"
+    title: "Politique de confidentialité"
+    last_updated_value: "Mars 2026"
+    intro: "Cette politique explique quelles données personnelles nous collectons lorsque vous utilisez l'API de parsing de CV Parse, pourquoi nous les collectons, combien de temps nous les conservons et quels droits vous avez. Nous l'avons rédigée en langage clair — si quelque chose n'est pas clair, contactez-nous."
+
+    s1_title: "1. Qui sommes-nous"
+    s1_p1: "Parse est un service de parsing de CV. Nous agissons en tant que responsable du traitement pour les données personnelles collectées via ce site (adresses IP, journaux d'utilisation). Lorsque vous utilisez l'API pour parser un CV, nous agissons en tant que sous-traitant en votre nom — vous restez responsable du traitement pour le contenu des CV que vous soumettez."
+    s1_entity_label: "Entité légale"
+    s1_entity_value: "[À RENSEIGNER — nom de l'entité juridique et adresse enregistrée]"
+    s1_contact_label: "Contact responsable du traitement"
+    s1_contact_value: "privacy@[domaine] [À RENSEIGNER]"
+
+    s2_title: "2. Données collectées"
+    s2_intro: "Lors de l'utilisation de Parse, nous pouvons collecter les données suivantes :"
+    s2_item1_title: "Fichiers PDF uploadés"
+    s2_item1_body: "Le CV que vous importez est traité en mémoire. Le fichier est stocké temporairement uniquement le temps de l'extraction du texte, puis supprimé immédiatement."
+    s2_item2_title: "Données CV extraites"
+    s2_item2_body: "Les données structurées extraites du CV (nom, coordonnées, historique professionnel, formation, compétences, langues) sont stockées au format JSON et associées à votre job de parsing."
+    s2_item3_title: "Adresses IP"
+    s2_item3_body: "Votre adresse IP est journalisée pour appliquer les limites de débit (max 5 analyses par jour sur la démo gratuite) et prévenir les abus."
+    s2_item4_title: "Métadonnées de job"
+    s2_item4_body: "Informations techniques sur chaque requête de parsing : identifiant du job, statut, horodatages, codes d'erreur. Ces données ne contiennent pas de données personnelles."
+
+    s3_title: "3. Pourquoi nous les collectons"
+    s3_p1: "Nous collectons les données CV extraites uniquement pour vous fournir le résultat de parsing demandé via l'API. Les adresses IP sont utilisées uniquement pour appliquer les limites de débit et prévenir les abus. Nous n'utilisons pas vos données à des fins de marketing, de profilage, de publicité, ni pour aucun autre objectif que l'exploitation de ce service."
+
+    s4_title: "4. Durées de conservation"
+    s4_payload_label: "Données CV extraites"
+    s4_payload_value: "Supprimées 30 jours après le parsing. Après suppression, seuls l'identifiant du job, le statut et les horodatages sont conservés — aucune donnée personnelle."
+    s4_pdf_label: "Fichiers PDF uploadés"
+    s4_pdf_value: "Supprimés immédiatement après l'extraction du texte. Non conservés au-delà de l'étape de traitement."
+    s4_metadata_label: "Métadonnées de job"
+    s4_metadata_value: "Conservées indéfiniment. Ne contiennent aucune donnée personnelle — uniquement des identifiants techniques et des horodatages à des fins d'audit et de support."
+    s4_logs_label: "Adresses IP dans les journaux"
+    s4_logs_value: "Conservées jusqu'à 30 jours dans les fichiers journaux du serveur."
+
+    s5_title: "5. Partage des données"
+    s5_p1: "Nous ne vendons ni ne partageons vos données CV avec d'autres clients ou des tiers, sauf dans les cas décrits ci-dessous."
+    s5_ai_title: "Fournisseurs d'IA"
+    s5_ai_p1: "Le texte extrait du CV est envoyé à un fournisseur d'IA pour réaliser l'extraction structurée. Selon la configuration de l'API, il s'agit soit de Mistral AI, soit d'OpenAI. Nous vous recommandons de consulter leurs politiques de confidentialité respectives avant de choisir un fournisseur."
+    s5_no_analytics: "Nous n'utilisons aucun service d'analyse tiers, script de suivi ou régie publicitaire sur cette plateforme."
+
+    s6_title: "6. Vos droits au titre du RGPD"
+    s6_p1: "Si vous êtes situé dans l'UE/EEE, vous disposez des droits suivants concernant vos données personnelles :"
+    s6_right1: "Droit d'accès — obtenir une copie des données que nous détenons sur vous."
+    s6_right2: "Droit à l'effacement — demander la suppression de vos données personnelles."
+    s6_right3: "Droit à la portabilité — recevoir vos données dans un format lisible par machine."
+    s6_right4: "Droit d'opposition — vous opposer au traitement dans certaines circonstances."
+    s6_right5: "Droit d'introduire une réclamation auprès de votre autorité nationale de protection des données."
+    s6_contact: "Pour exercer ces droits, contactez-nous à :"
+    s6_contact_value: "privacy@[domaine] [À RENSEIGNER]"
+
+    s7_title: "7. Cookies"
+    s7_p1: "Nous utilisons un cookie de session pour mémoriser votre préférence de langue (français ou anglais). Ce cookie ne contient aucune donnée personnelle, ne vous suit pas sur d'autres sites et expire à la fermeture de votre navigateur."
+    s7_p2: "Nous n'utilisons aucun cookie de suivi, publicitaire ou d'analyse. Si cela devait changer à l'avenir, cette politique et la bannière de consentement seraient mises à jour avant tout nouveau cookie."
+
+    s8_title: "8. Contact et DPO"
+    s8_p1: "Pour toute question relative à cette politique ou pour exercer vos droits :"
+    s8_contact_value: "privacy@[domaine] [À RENSEIGNER]"
+    s8_address_value: "[À RENSEIGNER — adresse postale]"
+
+terms:
+    page_title: "Conditions d'utilisation — Parse"
+    title: "Conditions d'utilisation"
+    last_updated_value: "Mars 2026"
+    intro: "Ces conditions régissent votre utilisation de l'API de parsing de CV Parse et de l'interface de démonstration. En utilisant ce service, vous acceptez ces conditions. Si vous ne les acceptez pas, veuillez ne pas utiliser le service."
+
+    s1_title: "1. Description du service"
+    s1_p1: "Parse extrait des données structurées (nom, coordonnées, historique professionnel, formation, compétences, langues) à partir de CV au format PDF en utilisant des modèles d'IA, et retourne les résultats au format JSON via une API REST."
+    s1_not_title: "Le service ne fait pas :"
+    s1_not1: "Reconnaissance optique de caractères (OCR) sur les documents scannés — les CV doivent être des PDF avec texte natif."
+    s1_not2: "Garantie de précision de l'extraction — les résultats peuvent contenir des erreurs ou des omissions."
+    s1_not3: "Conservation du contenu des CV au-delà de 30 jours à compter de la date de parsing."
+    s1_not4: "Scoring, classement ou évaluation des candidats sous quelque forme que ce soit."
+
+    s2_title: "2. Utilisation acceptable"
+    s2_p1: "Vous ne devez importer que des CV que vous êtes légalement autorisé à traiter — par exemple, des CV soumis par des candidats avec leur consentement. Vous vous engagez à ne pas :"
+    s2_item1: "Importer des documents appartenant à des personnes sans leur connaissance ni leur consentement."
+    s2_item2: "Tenter d'analyser, sonder ou extraire les modèles d'IA sous-jacents."
+    s2_item3: "Contourner ou abuser des limites de débit."
+    s2_item4: "Utiliser le service en violation de toute loi ou réglementation applicable, y compris les lois sur la protection des données."
+
+    s3_title: "3. Exclusion de garantie"
+    s3_p1: "Le service est fourni « en l'état », sans garantie d'aucune sorte, expresse ou implicite. Les résultats d'extraction peuvent contenir des erreurs, des omissions ou des inexactitudes — en particulier pour les formats ou langues de CV non standard."
+    s3_p2: "Les résultats de Parse ne doivent pas être utilisés comme seul fondement d'une décision de recrutement. Nous ne garantissons pas la disponibilité ou la continuité du service."
+
+    s4_title: "4. Limitation de responsabilité"
+    s4_p1: "Dans la limite du droit applicable, notre responsabilité totale envers vous pour tout litige découlant de votre utilisation du service est limitée au montant payé pour le service au cours des 12 mois précédant le litige. Pour la démo gratuite, ce montant est nul."
+    s4_p2: "Nous ne sommes pas responsables des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, y compris la perte de données, de revenus ou d'activité."
+
+    s5_title: "5. Traitement des données"
+    s5_p1: "Les données CV extraites (données personnelles) sont supprimées 30 jours après le parsing. Les fichiers PDF importés sont supprimés immédiatement après l'extraction du texte. Les métadonnées de job (identifiant, statut, horodatages) sont conservées indéfiniment et ne contiennent aucune donnée personnelle."
+    s5_p2: "Pour tous les détails sur la collecte, la conservation et vos droits, consultez notre Politique de confidentialité."
+
+    s6_title: "6. Droit applicable"
+    s6_p1: "[À RENSEIGNER — droit applicable et juridiction compétente]"
+
+    s7_title: "7. Modification des conditions"
+    s7_p1: "Nous pouvons mettre à jour ces conditions de temps à autre. La version mise à jour sera publiée à cette URL avec une date de révision. La poursuite de l'utilisation du service après une mise à jour vaut acceptation des nouvelles conditions."
+
+    s8_title: "8. Contact"
+    s8_p1: "Pour toute question relative à ces conditions :"
+    s8_contact_value: "legal@[domaine] [À RENSEIGNER]"
+
+dpa:
+    page_title: "Accord de traitement des données — Parse"
+    title: "Accord de traitement des données"
+    subtitle: "Modèle conforme à l'article 28 du RGPD"
+    notice: "Ce document est un modèle à des fins de vérification uniquement. Il ne constitue pas un accord contraignant tant qu'il n'est pas contresigné par les deux parties. Contactez-nous pour obtenir un exemplaire contresigné."
+    notice_contact: "legal@[domaine] [À RENSEIGNER]"
+
+    parties_title: "Parties"
+    processor_label: "Sous-traitant"
+    processor_value: "[À RENSEIGNER — dénomination sociale, adresse enregistrée, pays]"
+    controller_label: "Responsable du traitement"
+    controller_value: "Le client identifié par son utilisation de l'API Parse (« vous »)."
+
+    s1_title: "1. Objet et durée"
+    s1_p1: "Le présent accord régit le traitement des données personnelles effectué par le Sous-traitant pour le compte du Responsable du traitement dans le cadre du service de parsing de CV Parse. La durée du traitement correspond à la durée d'utilisation du service par le Responsable du traitement."
+
+    s2_title: "2. Nature et finalité du traitement"
+    s2_p1: "Le Sous-traitant extrait des données personnelles structurées à partir de CV au format PDF fournis par le Responsable du traitement, en utilisant des modèles d'IA, et retourne les résultats au Responsable du traitement via une API REST. Le Sous-traitant n'utilise pas les données à d'autres fins que la fourniture de ce service."
+
+    s3_title: "3. Catégories de données personnelles"
+    s3_p1: "Les données personnelles traitées peuvent inclure : nom complet ; coordonnées (adresse e-mail, numéro de téléphone, localisation, profil LinkedIn, site personnel) ; historique professionnel (intitulés de poste, entreprises, dates, descriptions) ; formation (diplômes, établissements, dates) ; compétences ; langues et niveaux ; certifications — tels qu'extraits des CV soumis par le Responsable du traitement."
+
+    s4_title: "4. Catégories de personnes concernées"
+    s4_p1: "Candidats à l'emploi dont les CV sont soumis au service Parse par le Responsable du traitement."
+
+    s5_title: "5. Obligations du Sous-traitant (article 28(3) RGPD)"
+    s5_intro: "Conformément à l'article 28(3) du RGPD, le Sous-traitant s'engage à :"
+    s5_a_label: "(a) Traitement sur instruction"
+    s5_a: "Traiter les données personnelles uniquement sur instruction documentée du Responsable du traitement — à savoir les CV soumis via l'API. Le Sous-traitant ne traitera pas les données à ses propres fins."
+    s5_b_label: "(b) Confidentialité"
+    s5_b: "Veiller à ce que toutes les personnes autorisées à traiter les données personnelles soient soumises à des obligations de confidentialité, contractuelles ou légales."
+    s5_c_label: "(c) Sécurité"
+    s5_c: "Mettre en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données personnelles contre la destruction, la perte, l'altération ou la divulgation accidentelle ou illicite."
+    s5_d_label: "(d) Sous-traitants ultérieurs"
+    s5_d: "Ne pas faire appel à des sous-traitants ultérieurs sans notification préalable au Responsable du traitement. Les sous-traitants actuels sont listés à la section 8. Le choix de la configuration AI_PROVIDER par le Responsable détermine le sous-traitant actif."
+    s5_e_label: "(e) Droits des personnes concernées"
+    s5_e: "Aider le Responsable du traitement à donner suite aux demandes d'exercice des droits des personnes concernées (accès, effacement, portabilité, opposition), dans la mesure du techniquement possible au regard des données détenues par le Sous-traitant."
+    s5_f_label: "(f) Suppression en fin de service"
+    s5_f: "Supprimer toutes les données personnelles (contenu CV) dans les 30 jours suivant le traitement, ou immédiatement en cas de résiliation du service à la demande du Responsable du traitement. Les métadonnées de job, qui ne contiennent aucune donnée personnelle, sont conservées indéfiniment à des fins d'audit. Confirmer la suppression par écrit sur demande."
+    s5_g_label: "(g) Assistance à la conformité"
+    s5_g: "Mettre à disposition toutes les informations raisonnablement nécessaires pour démontrer le respect du présent accord, et coopérer aux audits conduits par le Responsable du traitement ou un auditeur mandaté, avec un préavis raisonnable."
+
+    s6_title: "6. Mesures de sécurité"
+    s6_p1: "Le Sous-traitant met en œuvre les mesures techniques et organisationnelles suivantes :"
+    s6_item1: "Toutes les données transmises via HTTPS (TLS 1.2 ou supérieur)."
+    s6_item2: "Fichiers PDF importés supprimés après extraction du texte — non conservés au-delà de l'étape de traitement."
+    s6_item3: "Contenu CV (données personnelles) supprimé 30 jours après le parsing."
+    s6_item4: "Les métadonnées de job ne contiennent aucune donnée personnelle et sont conservées à des fins d'audit et de support."
+    s6_item5: "Aucun accès aux données entre clients — chaque job est isolé."
+    s6_item6: "Accès aux systèmes de production restreint au personnel autorisé soumis à des obligations de confidentialité."
+
+    s7_title: "7. Transferts de données"
+    s7_p1: "Le texte extrait des CV est transféré aux sous-traitants ultérieurs listés à la section 8 pour traitement. Les deux sous-traitants listés opèrent sous des conditions de traitement des données conformes au RGPD. Le Responsable du traitement doit examiner le DPA de chaque sous-traitant avant de sélectionner un fournisseur via la configuration AI_PROVIDER."
+
+    s8_title: "8. Sous-traitants ultérieurs"
+    s8_intro: "Le Sous-traitant fait appel aux sous-traitants ultérieurs suivants pour l'extraction par IA. Un seul est actif à la fois, déterminé par la configuration de l'API du Responsable du traitement."
+    s8_mistral_name: "Mistral AI"
+    s8_mistral_desc: "Fournisseur de modèle d'IA. Actif lorsque AI_PROVIDER=mistral."
+    s8_mistral_dpa: "Mistral AI — Conditions et DPA"
+    s8_openai_name: "OpenAI"
+    s8_openai_desc: "Fournisseur de modèle d'IA. Actif lorsque AI_PROVIDER=openai."
+    s8_openai_dpa: "OpenAI — Addendum de traitement des données"
+    s8_note: "Le choix du fournisseur par le Responsable du traitement détermine quel sous-traitant reçoit le texte du CV. Le Sous-traitant informera le Responsable de toute modification de cette liste avant sa prise d'effet."
+
+    s9_title: "9. Droit applicable et juridiction"
+    s9_p1: "[À RENSEIGNER — droit applicable et juridiction compétente]"
+
+    s10_title: "10. Signatures"
+    s10_intro: "Le présent accord est conclu par les parties identifiées ci-dessus. Il devient contraignant lors de la contresignature par les deux parties."
+    s10_processor_label: "Pour le Sous-traitant"
+    s10_controller_label: "Pour le Responsable du traitement"
+    s10_name: "Nom complet"
+    s10_title_field: "Titre / Fonction"
+    s10_date: "Date"
+    s10_signature: "Signature"

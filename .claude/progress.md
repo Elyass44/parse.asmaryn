@@ -69,8 +69,8 @@
 - [x] MVP-080 · Remove resume deduplication (drop content_hash column + lookup, new reversible migration)
 - [x] MVP-081 · Add `payload_deleted_at` to ParseResult (nullable timestamp + `wipePayload()` domain method)
 - [x] MVP-082 · Payload retention in cleanup command (30-day payload wipe, no hard delete)
-- [ ] MVP-084 · Privacy Policy page (/privacy, retention periods, no-tracking statement)
-- [ ] MVP-085 · Terms of Service page (/terms)
-- [ ] MVP-086 · Data Processing Agreement page (/dpa, Article 28 GDPR, sub-processors listed)
-- [ ] MVP-087 · Demo page footer with legal links & GDPR consent banner
+- [x] MVP-084 · Privacy Policy page (/privacy, retention periods, no-tracking statement)
+- [x] MVP-085 · Terms of Service page (/terms)
+- [x] MVP-086 · Data Processing Agreement page (/dpa, Article 28 GDPR, sub-processors listed)
+- [x] MVP-087 · Demo page footer with legal links & GDPR consent banner
 

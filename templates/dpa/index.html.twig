@@ -1,0 +1,175 @@
+{% extends 'legal/base.html.twig' %}
+
+{% block title %}{{ 'dpa.page_title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+@media print {
+    header, footer, #gdpr-banner, [data-noprint] { display: none !important; }
+    main { padding-top: 0 !important; }
+    body { background: white !important; color: black !important; }
+    .dark\:bg-slate-900, .dark\:bg-slate-950 { background: white !important; }
+    a { color: inherit !important; text-decoration: underline; }
+    mark { background: #fef3c7 !important; color: #78350f !important; }
+}
+</style>
+{% endblock %}
+
+{% block legal_content %}
+
+<div class="space-y-10">
+
+    {# ─── Header ─── #}
+    <div class="space-y-3 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {{ 'dpa.title'|trans }}
+                </h1>
+                <p class="text-sm font-medium text-violet-600 dark:text-violet-400 mt-1">{{ 'dpa.subtitle'|trans }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'legal.last_updated'|trans }} : March 2026</p>
+            </div>
+            <button onclick="window.print()" data-noprint
+                    class="flex-shrink-0 hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                {{ 'legal.print'|trans }}
+            </button>
+        </div>
+
+        {# Template notice banner #}
+        <div class="rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 p-4 flex gap-3">
+            <svg class="w-5 h-5 flex-shrink-0 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <div class="text-sm space-y-0.5">
+                <p class="font-semibold text-amber-800 dark:text-amber-300">{{ 'dpa.notice'|trans }}</p>
+                <p class="text-amber-700 dark:text-amber-400">{{ 'dpa.notice_contact'|trans }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# ─── Parties ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.parties_title'|trans }}</h2>
+        <dl class="grid sm:grid-cols-2 gap-3">
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <dt class="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">{{ 'dpa.processor_label'|trans }}</dt>
+                <dd class="text-sm text-slate-700 dark:text-slate-300">{{ 'dpa.processor_value'|trans }}</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <dt class="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide mb-1">{{ 'dpa.controller_label'|trans }}</dt>
+                <dd class="text-sm text-slate-700 dark:text-slate-300">{{ 'dpa.controller_value'|trans }}</dd>
+            </div>
+        </dl>
+    </section>
+
+    {# ─── Sections 1–4 ─── #}
+    {% for s in [
+        {key: 's1', p: ['p1']},
+        {key: 's2', p: ['p1']},
+        {key: 's3', p: ['p1']},
+        {key: 's4', p: ['p1']},
+    ] %}
+    <section class="space-y-3">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ ('dpa.' ~ s.key ~ '_title')|trans }}</h2>
+        {% for p in s.p %}
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ ('dpa.' ~ s.key ~ '_' ~ p)|trans }}</p>
+        {% endfor %}
+    </section>
+    {% endfor %}
+
+    {# ─── Section 5 — Article 28 checklist ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s5_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s5_intro'|trans }}</p>
+        <div class="space-y-3">
+            {% for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
+            <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-1">
+                <p class="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide">{{ ('dpa.s5_' ~ letter ~ '_label')|trans }}</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{{ ('dpa.s5_' ~ letter)|trans }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# ─── Section 6 ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s6_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s6_p1'|trans }}</p>
+        <ul class="space-y-2">
+            {% for i in 1..6 %}
+            <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                {{ ('dpa.s6_item' ~ i)|trans }}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    {# ─── Section 7 ─── #}
+    <section class="space-y-3">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s7_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s7_p1'|trans }}</p>
+    </section>
+
+    {# ─── Section 8 — Sub-processors ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s8_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s8_intro'|trans }}</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+            {# Mistral AI #}
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-5 space-y-2">
+                <p class="font-semibold text-slate-800 dark:text-slate-200">{{ 'dpa.s8_mistral_name'|trans }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'dpa.s8_mistral_desc'|trans }}</p>
+                <a href="https://mistral.ai/terms/" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-xs font-medium text-violet-600 dark:text-violet-400 hover:underline">
+                    {{ 'dpa.s8_mistral_dpa'|trans }}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+            {# OpenAI #}
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-5 space-y-2">
+                <p class="font-semibold text-slate-800 dark:text-slate-200">{{ 'dpa.s8_openai_name'|trans }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ 'dpa.s8_openai_desc'|trans }}</p>
+                <a href="https://openai.com/policies/data-processing-addendum" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1 text-xs font-medium text-violet-600 dark:text-violet-400 hover:underline">
+                    {{ 'dpa.s8_openai_dpa'|trans }}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 italic">{{ 'dpa.s8_note'|trans }}</p>
+    </section>
+
+    {# ─── Section 9 ─── #}
+    <section class="space-y-3">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s9_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s9_p1'|trans }}</p>
+    </section>
+
+    {# ─── Section 10 — Signatures ─── #}
+    <section class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'dpa.s10_title'|trans }}</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'dpa.s10_intro'|trans }}</p>
+        <div class="grid sm:grid-cols-2 gap-4 mt-2">
+            {% for party in ['processor', 'controller'] %}
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-5 space-y-4">
+                <p class="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wide">{{ ('dpa.s10_' ~ party ~ '_label')|trans }}</p>
+                {% for field in ['name', 'title_field', 'date', 'signature'] %}
+                <div class="space-y-1">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ ('dpa.s10_' ~ field)|trans }}</p>
+                    <div class="border-b border-slate-300 dark:border-slate-700 h-6"></div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

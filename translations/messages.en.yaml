@@ -26,3 +26,201 @@ demo:
     error_timeout: "Analysis is taking longer than expected. Please try again."
     error_rate_limited: "You've reached the daily limit of 5 parses. Come back tomorrow!"
     error_scanned_pdf: "This PDF doesn't contain extractable text. Please check it's not a scanned document."
+
+footer:
+    tagline: "CV data is deleted after 30 days. Job metadata is kept for audit purposes."
+    privacy: "Privacy Policy"
+    terms: "Terms of Service"
+    dpa: "Data Processing Agreement"
+
+consent:
+    message: "This site uses one session cookie to remember your language preference. No tracking cookies or analytics are used."
+    learn_more: "Learn more"
+    dismiss: "I understand"
+
+legal:
+    back_home: "Back to home"
+    last_updated: "Last updated"
+    print: "Print / Download"
+    to_fill_notice: "This placeholder must be filled before going live."
+
+privacy:
+    page_title: "Privacy Policy — Parse"
+    title: "Privacy Policy"
+    last_updated_value: "March 2026"
+    intro: "This policy explains what personal data we collect when you use the Parse résumé parsing API, why we collect it, how long we keep it, and what rights you have. We have written it in plain language — if anything is unclear, please contact us."
+
+    s1_title: "1. Who we are"
+    s1_p1: "Parse is a résumé parsing service. We act as the data controller for the personal data collected through this website (IP addresses, usage logs). When you use the API to parse a résumé, we act as a data processor on your behalf — you remain the data controller for the résumé content you submit."
+    s1_entity_label: "Legal entity"
+    s1_entity_value: "[TO FILL — legal entity name and registered address]"
+    s1_contact_label: "Data controller contact"
+    s1_contact_value: "privacy@[domain] [TO FILL]"
+
+    s2_title: "2. What data we collect"
+    s2_intro: "When you use Parse, we may collect the following:"
+    s2_item1_title: "Uploaded PDF files"
+    s2_item1_body: "The résumé you upload is processed in memory. The file is stored temporarily only for the duration of text extraction, then deleted immediately."
+    s2_item2_title: "Extracted CV payload"
+    s2_item2_body: "The structured data extracted from the résumé (name, contact details, employment history, education, skills, languages) is stored as JSON and linked to your parse job."
+    s2_item3_title: "IP addresses"
+    s2_item3_body: "Your IP address is logged to enforce rate limits (max 5 parses per day on the free demo) and prevent abuse."
+    s2_item4_title: "Job metadata"
+    s2_item4_body: "Technical information about each parse request: job ID, status, timestamps, error codes. This does not contain personal data."
+
+    s3_title: "3. Why we collect it"
+    s3_p1: "We collect extracted CV data solely to deliver the parsing result you requested via the API. IP addresses are used only to enforce rate limits and prevent abuse. We do not use your data for marketing, profiling, advertising, or any purpose beyond operating this service."
+
+    s4_title: "4. How long we keep it"
+    s4_payload_label: "Extracted CV payload"
+    s4_payload_value: "Deleted 30 days after parsing. After deletion, only the job ID, status, and timestamps remain — no personal data."
+    s4_pdf_label: "Uploaded PDF files"
+    s4_pdf_value: "Deleted immediately after text extraction. Not retained beyond the processing step."
+    s4_metadata_label: "Job metadata"
+    s4_metadata_value: "Retained indefinitely. Contains no personal data — only technical identifiers and timestamps used for audit and support."
+    s4_logs_label: "IP addresses in logs"
+    s4_logs_value: "Retained for up to 30 days in server log files."
+
+    s5_title: "5. Data sharing"
+    s5_p1: "We do not sell or share your CV data with other customers or third parties, except as described below."
+    s5_ai_title: "AI providers"
+    s5_ai_p1: "The text extracted from the résumé is sent to an AI provider to perform structured data extraction. Depending on the API configuration, this is either Mistral AI or OpenAI. You should review their respective privacy policies before selecting a provider."
+    s5_no_analytics: "We do not use any third-party analytics, tracking scripts, or advertising services on this platform."
+
+    s6_title: "6. Your rights under GDPR"
+    s6_p1: "If you are located in the EU/EEA, you have the following rights regarding your personal data:"
+    s6_right1: "Right of access — obtain a copy of the data we hold about you."
+    s6_right2: "Right to erasure — request deletion of your personal data."
+    s6_right3: "Right to data portability — receive your data in a machine-readable format."
+    s6_right4: "Right to object — object to processing in certain circumstances."
+    s6_right5: "Right to lodge a complaint with your national data protection authority."
+    s6_contact: "To exercise these rights, contact us at:"
+    s6_contact_value: "privacy@[domain] [TO FILL]"
+
+    s7_title: "7. Cookies"
+    s7_p1: "We use one session cookie to remember your language preference (English or French). This cookie contains no personal data, does not track you across websites, and expires when you close your browser."
+    s7_p2: "We do not use any tracking, advertising, or analytics cookies. If this changes in the future, this policy and the consent banner will be updated before any new cookies are set."
+
+    s8_title: "8. Contact and DPO"
+    s8_p1: "For questions about this policy or to exercise your rights:"
+    s8_contact_value: "privacy@[domain] [TO FILL]"
+    s8_address_value: "[TO FILL — postal address]"
+
+terms:
+    page_title: "Terms of Service — Parse"
+    title: "Terms of Service"
+    last_updated_value: "March 2026"
+    intro: "These terms govern your use of the Parse résumé parsing API and demo interface. By using this service, you agree to these terms. If you do not agree, please do not use the service."
+
+    s1_title: "1. What the service does"
+    s1_p1: "Parse extracts structured data (name, contact details, employment history, education, skills, languages) from PDF résumés using AI language models, and returns results as JSON via a REST API."
+    s1_not_title: "The service does not:"
+    s1_not1: "Perform OCR on scanned documents — résumés must be text-based PDFs."
+    s1_not2: "Guarantee extraction accuracy — results may contain errors or omissions."
+    s1_not3: "Store résumé content beyond 30 days from the date of parsing."
+    s1_not4: "Provide employment scoring, ranking, or any form of candidate evaluation."
+
+    s2_title: "2. Acceptable use"
+    s2_p1: "You must only upload résumés that you are legally authorised to process — for example, résumés submitted to you by job applicants with their consent. You must not:"
+    s2_item1: "Upload documents belonging to individuals without their knowledge or consent."
+    s2_item2: "Attempt to reverse-engineer, probe, or extract the underlying AI models."
+    s2_item3: "Circumvent or abuse the rate limits."
+    s2_item4: "Use the service in violation of any applicable law or regulation, including data protection laws."
+
+    s3_title: "3. Disclaimer"
+    s3_p1: "The service is provided 'as is' without warranty of any kind, express or implied. Extraction results may contain errors, omissions, or inaccuracies — particularly for non-standard résumé formats or languages."
+    s3_p2: "Parse results must not be used as the sole basis for employment decisions. We do not guarantee uptime, availability, or uninterrupted service."
+
+    s4_title: "4. Limitation of liability"
+    s4_p1: "To the maximum extent permitted by applicable law, our total liability to you for any claim arising from your use of the service is limited to the amount you paid for the service in the 12 months preceding the claim. For the free demo tier, this amount is zero."
+    s4_p2: "We are not liable for indirect, incidental, special, consequential, or punitive damages, including loss of data, loss of revenue, or business interruption."
+
+    s5_title: "5. Data handling"
+    s5_p1: "Extracted CV data (personal data) is deleted 30 days after parsing. Uploaded PDF files are deleted immediately after text extraction. Job metadata (job ID, status, timestamps) is retained indefinitely and contains no personal data."
+    s5_p2: "For full details on data collection, retention, and your rights, see our Privacy Policy."
+
+    s6_title: "6. Governing law"
+    s6_p1: "[TO FILL — governing law and jurisdiction]"
+
+    s7_title: "7. Changes to these terms"
+    s7_p1: "We may update these terms from time to time. The updated version will be posted at this URL with a revised date. Continued use of the service after an update constitutes acceptance of the revised terms."
+
+    s8_title: "8. Contact"
+    s8_p1: "For questions about these terms:"
+    s8_contact_value: "legal@[domain] [TO FILL]"
+
+dpa:
+    page_title: "Data Processing Agreement — Parse"
+    title: "Data Processing Agreement"
+    subtitle: "Template under Article 28 GDPR"
+    notice: "This is a template for review purposes only. It does not constitute a binding agreement until countersigned by both parties. Contact us to obtain a countersigned copy."
+    notice_contact: "legal@[domain] [TO FILL]"
+
+    parties_title: "Parties"
+    processor_label: "Data Processor"
+    processor_value: "[TO FILL — legal entity name, registered address, country]"
+    controller_label: "Data Controller"
+    controller_value: "The customer identified by their use of the Parse API (\"you\")."
+
+    s1_title: "1. Subject matter and duration"
+    s1_p1: "This agreement governs the processing of personal data carried out by the Processor on behalf of the Controller in connection with the Parse résumé parsing service. The duration of processing equals the term of the Controller's use of the service."
+
+    s2_title: "2. Nature and purpose of processing"
+    s2_p1: "The Processor extracts structured personal data from PDF résumés supplied by the Controller, using AI language models, and returns the results to the Controller via a REST API. The Processor does not use the data for any purpose other than delivering this service."
+
+    s3_title: "3. Categories of personal data"
+    s3_p1: "The personal data processed may include: full name; contact details (email address, phone number, location, LinkedIn profile URL, personal website); employment history (job titles, companies, dates, descriptions); educational background (degrees, institutions, dates); skills; languages and proficiency levels; certifications — as extracted from résumés submitted by the Controller."
+
+    s4_title: "4. Categories of data subjects"
+    s4_p1: "Job applicants and employment candidates whose résumés are submitted to the Parse service by the Controller."
+
+    s5_title: "5. Obligations of the Processor (Article 28(3) GDPR)"
+    s5_intro: "In accordance with Article 28(3) GDPR, the Processor agrees to the following:"
+    s5_a_label: "(a) Processing on instructions"
+    s5_a: "Process personal data only on documented instructions from the Controller — specifically, résumés submitted via the API. The Processor will not process the data for its own purposes."
+    s5_b_label: "(b) Confidentiality"
+    s5_b: "Ensure that all persons authorised to process the personal data are subject to confidentiality obligations, either by contract or by law."
+    s5_c_label: "(c) Security"
+    s5_c: "Implement appropriate technical and organisational security measures to protect personal data against accidental or unlawful destruction, loss, alteration, or unauthorised disclosure."
+    s5_d_label: "(d) Sub-processors"
+    s5_d: "Not engage sub-processors without prior notification to the Controller. Current sub-processors are listed in Section 8. The Controller's choice of AI_PROVIDER configuration determines which sub-processor is active."
+    s5_e_label: "(e) Data subject rights"
+    s5_e: "Assist the Controller in responding to data subject requests (access, erasure, portability, objection) to the extent technically possible given the data the Processor holds."
+    s5_f_label: "(f) Deletion at end of service"
+    s5_f: "Delete all personal data (CV payload) within 30 days of processing, or immediately upon termination of service at the Controller's request. Job metadata, which contains no personal data, is retained indefinitely for audit purposes. Confirm deletion in writing upon request."
+    s5_g_label: "(g) Compliance assistance"
+    s5_g: "Make available all information reasonably necessary to demonstrate compliance with this agreement, and cooperate with audits conducted by the Controller or an authorised auditor with reasonable notice."
+
+    s6_title: "6. Security measures"
+    s6_p1: "The Processor implements the following technical and organisational measures:"
+    s6_item1: "All data transmitted over HTTPS (TLS 1.2 or higher)."
+    s6_item2: "Uploaded PDF files deleted after text extraction — not stored beyond the processing step."
+    s6_item3: "CV payload (personal data) deleted after 30 days from the date of parsing."
+    s6_item4: "Job metadata contains no personal data and is retained for audit and support."
+    s6_item5: "No cross-customer data access — each job is isolated."
+    s6_item6: "Access to production systems restricted to authorised personnel under confidentiality obligations."
+
+    s7_title: "7. International data transfers"
+    s7_p1: "Extracted résumé text is transferred to the AI sub-processors listed in Section 8 for processing. Both listed sub-processors operate under GDPR-compliant data processing terms. The Controller should review each sub-processor's DPA before selecting a provider via the AI_PROVIDER configuration."
+
+    s8_title: "8. Sub-processors"
+    s8_intro: "The Processor uses the following sub-processors for AI-based extraction. Only one is active at a time, determined by the Controller's API configuration."
+    s8_mistral_name: "Mistral AI"
+    s8_mistral_desc: "AI language model provider. Active when AI_PROVIDER=mistral."
+    s8_mistral_dpa: "Mistral AI — Terms & DPA"
+    s8_openai_name: "OpenAI"
+    s8_openai_desc: "AI language model provider. Active when AI_PROVIDER=openai."
+    s8_openai_dpa: "OpenAI — Data Processing Addendum"
+    s8_note: "The Controller's choice of provider determines which sub-processor receives résumé text. The Processor will notify the Controller of any changes to this list before they take effect."
+
+    s9_title: "9. Governing law and jurisdiction"
+    s9_p1: "[TO FILL — governing law and jurisdiction]"
+
+    s10_title: "10. Signatures"
+    s10_intro: "This agreement is entered into by the parties identified above. It becomes binding upon countersignature by both parties."
+    s10_processor_label: "For the Data Processor"
+    s10_controller_label: "For the Data Controller"
+    s10_name: "Full name"
+    s10_title_field: "Title / Role"
+    s10_date: "Date"
+    s10_signature: "Signature"
