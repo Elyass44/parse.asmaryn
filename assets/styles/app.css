@@ -24,6 +24,16 @@
     background-color: rgba(109, 40, 217, 0.22) !important;
 }
 
+/* Paper dot-grid background */
+.bg-paper {
+    background-image: radial-gradient(circle, rgba(148, 163, 184, 0.45) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+.dark .bg-paper {
+    background-image: radial-gradient(circle, rgba(51, 65, 85, 0.65) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
 /* Button reveal animation */
 @keyframes fadeSlideIn {
     from { opacity: 0; transform: translateY(-6px); }
