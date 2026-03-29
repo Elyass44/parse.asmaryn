@@ -17,6 +17,7 @@
 | 6 | Demo page | 3 |
 | 7 | Hardening & limits | 3 |
 | 8 | Stats & deduplication | 3 |
+| 9 | GDPR compliance & data lifecycle | 8 |
 
 ---
 
@@ -627,6 +628,245 @@ Avoid re-parsing an identical PDF by hashing its content at upload time and reus
 - If a match is found: the uploaded file is discarded, no new job is created, and the existing job ID is returned with `200 OK` (instead of the usual `202`)
 - No `UNIQUE` constraint on `content_hash` — only completed jobs are reusable; pending/failed jobs with the same hash are ignored
 - Migration is reversible
+
+---
+
+## Epic 9 — GDPR compliance & data lifecycle
+
+> **Context:** The platform processes personal data (CV content) on behalf of customers who are data controllers under GDPR. This epic removes the deduplication feature (which conflated customer data across independent upload events), implements payload-only data retention (CV payload wiped after 30 days; job metadata kept indefinitely for audit and billing), adds the legal pages required for any data processor relationship (Privacy Policy, ToS, DPA), and adds a GDPR-compliant consent banner to the demo page.
+
+---
+
+### MVP-080 · Remove resume deduplication
+
+**Description**
+The content-hash deduplication introduced in MVP-072 silently reuses parse results across independent upload events. This is legally and semantically wrong: two customers uploading the same PDF must receive independent jobs with independent lifecycles. Remove the feature entirely — the `content_hash` column, the early-return lookup in the upload controller, and the corresponding migration.
+
+**DB changes**
+- Drop `parse_job.content_hash` column via a new reversible migration.
+
+**Code changes**
+- `ParseUploadController`: remove the SHA-256 computation, the `ParseJobRepository::findDoneByContentHash()` call (or equivalent), and the `200 OK` early-return branch. Every upload must reach the `dispatch(ParseResumeCommand)` call.
+- `ParseJob` entity: remove the `contentHash` property, its getter, and any Doctrine mapping for the column.
+- `ParseJobRepository` (domain interface + Doctrine implementation): remove the `findByContentHash` / `findDoneByContentHash` method.
+- Delete or update any unit/functional tests that assert deduplication behaviour.
+
+**Acceptance criteria**
+- Uploading the same PDF twice always creates two separate `ParseJob` records, each processed independently.
+- The `content_hash` column no longer exists in the database after the migration runs.
+- The upload controller never returns `200 OK`; it always returns `202 Accepted`.
+- No test references deduplication behaviour as a positive assertion.
+- Migration has a working `down()` method that re-adds the column (nullable, no data restoration required).
+
+**Notes**
+This is a **breaking change** for any caller relying on the `200 OK` dedup shortcut. Document it in the CHANGELOG. The `down()` migration must not attempt to repopulate hashes — it just re-adds the column as `NULL`-able so the schema is reversible.
+
+---
+
+### MVP-081 · Add `payload_deleted_at` to `ParseResult`
+
+**Description**
+Add a nullable timestamp column to `ParseResult` to record when the payload was wiped for data-retention purposes. This is a prerequisite for MVP-082 and MVP-083.
+
+**DB changes**
+- `parse_result`: add `payload_deleted_at TIMESTAMP WITH TIME ZONE NULL` (default `NULL`).
+
+**Code changes**
+- `ParseResult` entity: add `payloadDeletedAt` nullable `\DateTimeImmutable` property with Doctrine mapping.
+- Add a named method `ParseResult::wipePayload(\DateTimeImmutable $at): void` that sets `payload` to `null` and `payloadDeletedAt` to `$at`. This is a domain operation — it must live on the entity, not in the cleanup command.
+- `GET /api/parse/{id}` response: if `payload_deleted_at` is set, the `result` key must be omitted and a `result_expired` boolean set to `true` must be included instead.
+
+**Acceptance criteria**
+- Migration is reversible: `down()` drops the column.
+- `ParseResult::wipePayload()` sets both `payload = null` and `payloadDeletedAt = $now` atomically within the same entity mutation.
+- `ParseResult::getPayload()` returns `null` after `wipePayload()` is called.
+- Polling a job whose payload has been wiped returns:
+  ```json
+  {
+    "job_id": "...",
+    "status": "done",
+    "result_expired": true
+  }
+  ```
+- No existing tests break; add a unit test for `ParseResult::wipePayload()`.
+
+**Notes**
+`payload_deleted_at` is the authoritative marker for "this result has been intentionally wiped". Do not rely on `payload IS NULL` alone — a result could theoretically be null due to a bug. The timestamp makes intent explicit and auditable.
+
+---
+
+### MVP-082 · Payload retention in the cleanup command
+
+**Description**
+Update the existing `app:parse:cleanup` console command to wipe `ParseResult.payload` after a configurable number of days. Job rows and `ParseResult` rows are **never hard-deleted** — they are kept indefinitely for audit, history, and billing purposes. Only the CV payload (personal data) is removed.
+
+| Data | Retention | Action |
+|---|---|---|
+| `ParseResult.payload` | 30 days from `parse_result.created_at` | Set `payload = NULL`, set `payload_deleted_at = NOW()` |
+| `ParseJob` row + `ParseResult` row | **Indefinite** | No deletion |
+
+**New command signature**
+```
+app:parse:cleanup
+    [--payload-retention-days=30]   # days before payload is wiped (default 30)
+    [--dry-run]                     # log what would be done without writing
+```
+
+**Handler steps (in order)**
+1. Query `ParseResult` rows where `created_at < now() - payload_retention_days` AND `payload IS NOT NULL`.
+2. For each result: call `ParseResult::wipePayload($now)` and flush. Log count.
+
+**Acceptance criteria**
+- The old `--older-than` option is removed (breaking change — document in CHANGELOG).
+- `--payload-retention-days` is configurable with a default of 30.
+- `--dry-run` logs the count without persisting any change.
+- Command logs: `"Wiped payload for N ParseResult records (older than X days)"`.
+- No `$em->flush()` inside a loop — use a single DQL `UPDATE` or chunked flushes.
+- Designed to be called from a cron job (non-interactive, exit code 0 on success).
+- Functional test: seed jobs at T-29 days and T-31 days, run command, assert payload wiped only for T-31 records.
+
+**Notes**
+Job rows and ParseResult rows are kept indefinitely — they contain no personal data after the payload is wiped and are needed for audit trails, support, and billing history. Only the payload (the extracted CV content) is personal data under GDPR and must be deleted.
+
+---
+
+### MVP-084 · Privacy Policy page
+
+**Description**
+Create a static Privacy Policy page served by the Symfony `Web` layer. The page must be written in plain language and cover all data processed by the platform.
+
+**Route**
+`GET /privacy` → `PrivacyController::index()`, route name `web_privacy`
+
+**Required content sections**
+1. **Who we are** — name/contact of the data controller (placeholder if not yet known; mark clearly as `[TO FILL]`).
+2. **What data we collect** — uploaded PDF files (temporary), extracted CV payload (structured JSON), IP addresses (rate limiting, logs), job metadata.
+3. **Why we collect it** — to provide the parsing service; IP for rate limiting and abuse prevention.
+4. **How long we keep it**
+   - Uploaded PDF files: deleted immediately after text extraction (not stored beyond processing).
+   - Parsed CV data (payload): deleted after **30 days** from the date of parsing.
+   - Job metadata (status, timestamps, errors): retained indefinitely — contains no personal data.
+   - IP addresses in logs: retained for up to **30 days** in log files.
+5. **Data sharing** — no CV data is shared with other customers; no third-party analytics; AI provider (Mistral/OpenAI) receives the extracted text to perform parsing (list providers, link to their privacy policies).
+6. **Data subject rights** — right to access, erasure, portability under GDPR; contact address (placeholder).
+7. **Cookies** — no tracking cookies; session cookie used only for locale preference (explain purpose and lifetime).
+8. **Contact / DPO** — placeholder contact address.
+
+**Acceptance criteria**
+- Page is accessible at `/privacy` without authentication.
+- Page is linked from the demo page footer (see MVP-087).
+- The 30-day payload retention period is stated explicitly and matches the value in MVP-082.
+- No tracking pixels, no external fonts or scripts that could leak visitor data.
+- Page renders correctly on mobile (Tailwind utility classes, same layout as the rest of the site).
+- All `[TO FILL]` placeholders are visible and clearly marked so they cannot be overlooked before going live.
+
+**Notes**
+This page is a legal document. Do not use AI-generated legalese that obscures meaning. Plain language is required. The DPO contact placeholder must use a realistic format (e.g. `privacy@[domain]`) so it is obviously a placeholder and not a real address.
+
+---
+
+### MVP-085 · Terms of Service page
+
+**Description**
+Create a static Terms of Service page served by the Symfony `Web` layer.
+
+**Route**
+`GET /terms` → `TermsController::index()`, route name `web_terms`
+
+**Required content sections**
+1. **Service description** — what the API does, what it does not do (no OCR, no data storage beyond retention windows, no guarantee of extraction accuracy).
+2. **Acceptable use** — must not upload documents you are not authorised to process; must not attempt to reverse-engineer the extraction model; rate limits apply.
+3. **Disclaimer** — service is provided as-is; extraction results may contain errors; not suitable as the sole basis for employment decisions.
+4. **Liability limitation** — to the maximum extent permitted by law, liability is limited to the amount paid for the service (zero for the free demo tier).
+5. **Data handling** — reference the Privacy Policy for full details; restate that CV payload is deleted after 30 days and job metadata is kept indefinitely (it contains no personal data).
+6. **Governing law** — placeholder (`[TO FILL]`).
+7. **Changes to these terms** — we may update these terms; continued use constitutes acceptance.
+8. **Contact** — placeholder.
+
+**Acceptance criteria**
+- Page is accessible at `/terms` without authentication.
+- Page is linked from the demo page footer (see MVP-087).
+- The retention period stated here matches the Privacy Policy and the cleanup command default (30 days for payload).
+- Page renders correctly on mobile.
+- All `[TO FILL]` placeholders are visible and clearly marked.
+
+---
+
+### MVP-086 · Data Processing Agreement (DPA) page
+
+**Description**
+Create a DPA template page that positions the platform as a **data processor** under Article 28 GDPR and the customer as the **data controller**. The DPA must be a downloadable or printable page — it is not a click-through flow.
+
+**Route**
+`GET /dpa` → `DpaController::index()`, route name `web_dpa`
+
+**Required content sections**
+1. **Parties** — Data Processor: [platform name, address — `[TO FILL]`]; Data Controller: the customer (identified by their API usage).
+2. **Subject matter and duration** — processing CV/résumé data on behalf of the controller; duration equals the term of service.
+3. **Nature and purpose of processing** — extracting structured data from PDF résumés using AI models; results returned to the controller via API.
+4. **Categories of personal data** — name, contact details, employment history, education, skills, languages as extracted from résumés.
+5. **Categories of data subjects** — job applicants and candidates whose CVs are submitted by the controller.
+6. **Obligations of the processor** (Article 28(3) GDPR checklist):
+   a. Process data only on documented instructions from the controller.
+   b. Ensure persons authorised to process data are bound by confidentiality.
+   c. Implement appropriate technical and organisational security measures.
+   d. Not engage sub-processors without prior written consent; list current sub-processors (AI providers: Mistral / OpenAI — with links to their own DPAs).
+   e. Assist the controller in responding to data subject requests.
+   f. Delete or return all personal data at end of service; restate that CV payload is wiped after 30 days and job metadata (no personal data) is retained indefinitely.
+   g. Make available all information necessary to demonstrate compliance.
+7. **Security measures** — HTTPS in transit; data not stored beyond retention periods; no cross-customer data sharing; uploaded PDFs deleted after extraction.
+8. **Sub-processors** — list Mistral AI and OpenAI as sub-processors; note that the controller's choice of `AI_PROVIDER` determines which is active; link to each provider's DPA.
+9. **Governing law & jurisdiction** — placeholder (`[TO FILL]`).
+10. **Signatures** — placeholder block for controller name, date, and signature (print/download intent).
+
+**Acceptance criteria**
+- Page is accessible at `/dpa` without authentication.
+- Page is linked from the demo page footer (see MVP-087).
+- Article 28 compliance checklist is complete — no required clause is omitted.
+- Sub-processors section names both Mistral AI and OpenAI with external links to their processor agreements.
+- Retention period (30-day payload wipe) matches the Privacy Policy and cleanup command default exactly.
+- Page renders correctly on mobile and is print-friendly (a `@media print` CSS block hiding navigation is sufficient).
+- All `[TO FILL]` placeholders are visible and clearly marked.
+
+**Notes**
+This is a template, not a signed agreement. Its purpose is to give customers a document they can countersign, not to constitute a binding agreement on its own. Add a prominent notice at the top: "This is a template for review. Contact us to obtain a countersigned copy."
+
+---
+
+### MVP-087 · Demo page footer with legal links & GDPR consent banner
+
+**Description**
+Two distinct UI changes to the demo page: (1) add a footer linking to all three legal pages, and (2) add a GDPR-compliant consent banner that informs visitors of cookie usage and allows them to acknowledge it.
+
+**Footer requirements**
+- Persistent footer visible on the demo page (and ideally on all `Web` pages including the new legal pages).
+- Links: Privacy Policy (`/privacy`), Terms of Service (`/terms`), Data Processing Agreement (`/dpa`).
+- Brief tagline alongside the links: "CV data is deleted after 30 days. Job metadata is kept for audit purposes."
+- Implemented using Tailwind utility classes in the existing Twig base layout so all web pages inherit it.
+
+**Consent banner requirements**
+- Appears on first visit (controlled by a `gdpr_consent` session cookie or `localStorage` flag).
+- Dismissed permanently once the user clicks "OK" / "I understand" (sets the flag; banner does not reappear on reload).
+- Banner text must be accurate and not vague. Because the platform currently uses **no tracking cookies and no third-party analytics**, the banner must say so explicitly:
+  > "This site uses one session cookie to remember your language preference. No tracking cookies or analytics are used."
+- Must include a link to the Privacy Policy for users who want more detail.
+- If any analytics or third-party scripts are added in future, this banner text and the Privacy Policy must be updated before the scripts are enabled — add a `TODO` comment in the template to that effect.
+- Banner must be keyboard-accessible (focusable dismiss button, `role="dialog"`, `aria-modal="true"`).
+- Vanilla JS only — no consent management platform SDK.
+
+**Acceptance criteria**
+- Footer is present on `/`, `/privacy`, `/terms`, `/dpa`.
+- Footer links all resolve to correct routes.
+- Consent banner appears on first load of the demo page for a new visitor.
+- Clicking the dismiss button hides the banner and it does not reappear on page reload.
+- Banner states truthfully that no tracking cookies are used.
+- Banner contains a working link to `/privacy`.
+- Banner is keyboard-accessible: Tab reaches the dismiss button; Enter/Space activates it.
+- Banner does not block interaction with the page body (positioned as a non-modal bottom bar, not a full-screen overlay).
+- All acceptance criteria for MVP-084, MVP-085, MVP-086 footer links are satisfied by this ticket.
+
+**Notes**
+The consent banner is required under ePrivacy / GDPR even when no tracking cookies are used — transparency is mandatory regardless. A banner that accurately says "no tracking" is both legally safer and better UX than a vague cookie wall.
 
 ---
 
