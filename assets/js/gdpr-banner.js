@@ -1,4 +1,4 @@
-(function () {
+function initGdprBanner() {
     var banner = document.getElementById('gdpr-banner');
     var dismiss = document.getElementById('gdpr-dismiss');
     if (!banner || !dismiss) return;
@@ -14,4 +14,6 @@
     dismiss.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hide(); }
     });
-})();
+}
+
+document.addEventListener('turbo:load', initGdprBanner);

@@ -23,19 +23,7 @@
     <section class="space-y-4">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ 'terms.s1_title'|trans }}</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{{ 'terms.s1_p1'|trans }}</p>
-        <div class="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5">
-            <p class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">{{ 'terms.s1_not_title'|trans }}</p>
-            <ul class="space-y-2">
-                {% for i in 1..4 %}
-                <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-400 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    {{ ('terms.s1_not' ~ i)|trans }}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+
     </section>
 
     {# ─── Section 2 ─── #}

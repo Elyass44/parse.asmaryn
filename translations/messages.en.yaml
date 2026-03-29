@@ -28,7 +28,6 @@ demo:
     error_scanned_pdf: "This PDF doesn't contain extractable text. Please check it's not a scanned document."
 
 footer:
-    tagline: "CV data is deleted after 30 days. Job metadata is kept for audit purposes."
     privacy: "Privacy Policy"
     terms: "Terms of Service"
     dpa: "Data Processing Agreement"
@@ -45,13 +44,13 @@ legal:
     to_fill_notice: "This placeholder must be filled before going live."
 
 privacy:
-    page_title: "Privacy Policy — Parse"
+    page_title: "Privacy Policy — AI Resume Parser"
     title: "Privacy Policy"
     last_updated_value: "March 2026"
-    intro: "This policy explains what personal data we collect when you use the Parse résumé parsing API, why we collect it, how long we keep it, and what rights you have. We have written it in plain language — if anything is unclear, please contact us."
+    intro: "This policy explains what personal data we collect when you use AI Resume Parser by Asmaryn, why we collect it, how long we keep it, and what rights you have. We have written it in plain language — if anything is unclear, please contact us."
 
     s1_title: "1. Who we are"
-    s1_p1: "Parse is a résumé parsing service. We act as the data controller for the personal data collected through this website (IP addresses, usage logs). When you use the API to parse a résumé, we act as a data processor on your behalf — you remain the data controller for the résumé content you submit."
+    s1_p1: "AI Resume Parser is a résumé parsing service operated by Asmaryn. We act as the data controller for the personal data collected through this website (IP addresses, usage logs). When you use the API to parse a résumé, we act as a data processor on your behalf — you remain the data controller for the résumé content you submit."
     s1_entity_label: "Legal entity"
     s1_entity_value: "[TO FILL — legal entity name and registered address]"
     s1_contact_label: "Data controller contact"
@@ -84,7 +83,7 @@ privacy:
     s5_title: "5. Data sharing"
     s5_p1: "We do not sell or share your CV data with other customers or third parties, except as described below."
     s5_ai_title: "AI providers"
-    s5_ai_p1: "The text extracted from the résumé is sent to an AI provider to perform structured data extraction. Depending on the API configuration, this is either Mistral AI or OpenAI. You should review their respective privacy policies before selecting a provider."
+    s5_ai_p1: "The text extracted from the résumé is sent to an AI provider to perform structured data extraction. Mistral AI is used by default. Users on a paid plan may choose their preferred provider. You should review the relevant privacy policy before use."
     s5_no_analytics: "We do not use any third-party analytics, tracking scripts, or advertising services on this platform."
 
     s6_title: "6. Your rights under GDPR"
@@ -107,18 +106,13 @@ privacy:
     s8_address_value: "[TO FILL — postal address]"
 
 terms:
-    page_title: "Terms of Service — Parse"
+    page_title: "Terms of Service — AI Resume Parser"
     title: "Terms of Service"
     last_updated_value: "March 2026"
-    intro: "These terms govern your use of the Parse résumé parsing API and demo interface. By using this service, you agree to these terms. If you do not agree, please do not use the service."
+    intro: "These terms govern your use of AI Resume Parser by Asmaryn. By using this service, you agree to these terms. If you do not agree, please do not use the service."
 
     s1_title: "1. What the service does"
-    s1_p1: "Parse extracts structured data (name, contact details, employment history, education, skills, languages) from PDF résumés using AI language models, and returns results as JSON via a REST API."
-    s1_not_title: "The service does not:"
-    s1_not1: "Perform OCR on scanned documents — résumés must be text-based PDFs."
-    s1_not2: "Guarantee extraction accuracy — results may contain errors or omissions."
-    s1_not3: "Store résumé content beyond 30 days from the date of parsing."
-    s1_not4: "Provide employment scoring, ranking, or any form of candidate evaluation."
+    s1_p1: "AI Resume Parser extracts structured data (name, contact details, employment history, education, skills, languages) from PDF résumés using AI language models, and returns results as JSON via a REST API."
 
     s2_title: "2. Acceptable use"
     s2_p1: "You must only upload résumés that you are legally authorised to process — for example, résumés submitted to you by job applicants with their consent. You must not:"
@@ -163,7 +157,7 @@ dpa:
     controller_value: "The customer identified by their use of the Parse API (\"you\")."
 
     s1_title: "1. Subject matter and duration"
-    s1_p1: "This agreement governs the processing of personal data carried out by the Processor on behalf of the Controller in connection with the Parse résumé parsing service. The duration of processing equals the term of the Controller's use of the service."
+    s1_p1: "This agreement governs the processing of personal data carried out by the Processor on behalf of the Controller in connection with AI Resume Parser by Asmaryn. The duration of processing equals the term of the Controller's use of the service."
 
     s2_title: "2. Nature and purpose of processing"
     s2_p1: "The Processor extracts structured personal data from PDF résumés supplied by the Controller, using AI language models, and returns the results to the Controller via a REST API. The Processor does not use the data for any purpose other than delivering this service."
@@ -183,7 +177,7 @@ dpa:
     s5_c_label: "(c) Security"
     s5_c: "Implement appropriate technical and organisational security measures to protect personal data against accidental or unlawful destruction, loss, alteration, or unauthorised disclosure."
     s5_d_label: "(d) Sub-processors"
-    s5_d: "Not engage sub-processors without prior notification to the Controller. Current sub-processors are listed in Section 8. The Controller's choice of AI_PROVIDER configuration determines which sub-processor is active."
+    s5_d: "Not engage sub-processors without prior notification to the Controller. Current sub-processors are listed in Section 8. The active sub-processor is determined by the Controller's API configuration."
     s5_e_label: "(e) Data subject rights"
     s5_e: "Assist the Controller in responding to data subject requests (access, erasure, portability, objection) to the extent technically possible given the data the Processor holds."
     s5_f_label: "(f) Deletion at end of service"
@@ -201,17 +195,17 @@ dpa:
     s6_item6: "Access to production systems restricted to authorised personnel under confidentiality obligations."
 
     s7_title: "7. International data transfers"
-    s7_p1: "Extracted résumé text is transferred to the AI sub-processors listed in Section 8 for processing. Both listed sub-processors operate under GDPR-compliant data processing terms. The Controller should review each sub-processor's DPA before selecting a provider via the AI_PROVIDER configuration."
+    s7_p1: "Extracted résumé text is transferred to the AI sub-processors listed in Section 8 for processing. Both listed sub-processors operate under GDPR-compliant data processing terms. The Controller should review each sub-processor's DPA before selecting a provider."
 
     s8_title: "8. Sub-processors"
     s8_intro: "The Processor uses the following sub-processors for AI-based extraction. Only one is active at a time, determined by the Controller's API configuration."
     s8_mistral_name: "Mistral AI"
-    s8_mistral_desc: "AI language model provider. Active when AI_PROVIDER=mistral."
+    s8_mistral_desc: "Default AI provider used for résumé text extraction."
     s8_mistral_dpa: "Mistral AI — Terms & DPA"
     s8_openai_name: "OpenAI"
-    s8_openai_desc: "AI language model provider. Active when AI_PROVIDER=openai."
+    s8_openai_desc: "Alternative AI provider, available on paid plans."
     s8_openai_dpa: "OpenAI — Data Processing Addendum"
-    s8_note: "The Controller's choice of provider determines which sub-processor receives résumé text. The Processor will notify the Controller of any changes to this list before they take effect."
+    s8_note: "Only one provider is active per account, based on the Controller's plan and configuration. The Processor will notify the Controller of any changes to this list before they take effect."
 
     s9_title: "9. Governing law and jurisdiction"
     s9_p1: "[TO FILL — governing law and jurisdiction]"
