@@ -36,9 +36,6 @@ class ParseJob
     #[ORM\Column(type: 'string', length: 30, nullable: true)]
     private ?string $errorCode;
 
-    #[ORM\Column(type: 'string', length: 64, nullable: true)]
-    private ?string $contentHash;
-
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $startedAt;
 
@@ -56,7 +53,6 @@ class ParseJob
         ?WebhookStatus $webhookStatus,
         ?string $errorMessage,
         ?string $errorCode,
-        ?string $contentHash,
         ?\DateTimeImmutable $startedAt,
         \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
@@ -68,7 +64,6 @@ class ParseJob
         $this->webhookStatus = $webhookStatus;
         $this->errorMessage = $errorMessage;
         $this->errorCode = $errorCode;
-        $this->contentHash = $contentHash;
         $this->startedAt = $startedAt;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -78,7 +73,6 @@ class ParseJob
         string $id,
         OriginalFilename $originalFilename,
         ?WebhookUrl $webhookUrl = null,
-        ?string $contentHash = null,
     ): self {
         $now = new \DateTimeImmutable();
 
@@ -90,7 +84,6 @@ class ParseJob
             webhookStatus: null !== $webhookUrl ? WebhookStatus::Pending : null,
             errorMessage: null,
             errorCode: null,
-            contentHash: $contentHash,
             startedAt: null,
             createdAt: $now,
             updatedAt: $now,
@@ -163,11 +156,6 @@ class ParseJob
     public function getErrorCode(): ?string
     {
         return $this->errorCode;
-    }
-
-    public function getContentHash(): ?string
-    {
-        return $this->contentHash;
     }
 
     public function getStartedAt(): ?\DateTimeImmutable

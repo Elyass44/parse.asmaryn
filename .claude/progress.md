@@ -64,3 +64,13 @@
 - [x] MVP-071 · Processing duration tracking (started_at on parse_job)
 - [x] MVP-072 · Resume deduplication via content hash (SHA-256 on parse_job, reuse on upload)
 
+## Epic 9 — GDPR compliance & data lifecycle
+
+- [x] MVP-080 · Remove resume deduplication (drop content_hash column + lookup, new reversible migration)
+- [ ] MVP-081 · Add `payload_deleted_at` to ParseResult (nullable timestamp + `wipePayload()` domain method)
+- [ ] MVP-082 · Two-tier data retention in cleanup command (30-day payload wipe, 60-day hard delete)
+- [ ] MVP-084 · Privacy Policy page (/privacy, retention periods, no-tracking statement)
+- [ ] MVP-085 · Terms of Service page (/terms)
+- [ ] MVP-086 · Data Processing Agreement page (/dpa, Article 28 GDPR, sub-processors listed)
+- [ ] MVP-087 · Demo page footer with legal links & GDPR consent banner
+

@@ -60,38 +60,22 @@ final readonly class ParseResumeHandler
         $this->logger->info('parse_job.processing_started', ['job_id' => $command->jobId]);
 
         try {
-            $duplicate = null !== $job->getContentHash()
-                ? $this->parseJobRepository->findDoneByContentHash($job->getContentHash(), $job->getId())
-                : null;
+            $text = $this->pdfExtractor->extract($command->filePath);
+            $cleaned = $this->textCleaner->clean($text);
 
-            if (null !== $duplicate) {
-                $existing = $this->parseResultRepository->findByJobId($duplicate->getId());
-            }
+            $extraction = $this->aiProvider->extract($cleaned);
+            $payload = $this->schemaValidator->validate($extraction->payload);
 
-            if (null !== $duplicate && null !== $existing) {
-                $this->logger->info('parse_job.dedup_hit', [
-                    'job_id' => $command->jobId,
-                    'reused_job_id' => $duplicate->getId(),
-                ]);
-                $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $existing->getPayload(), $existing->toExtractionResult());
-            } else {
-                $text = $this->pdfExtractor->extract($command->filePath);
-                $cleaned = $this->textCleaner->clean($text);
+            $this->logger->info('parse_job.ai_extraction_done', [
+                'job_id' => $command->jobId,
+                'ai_provider' => $extraction->provider,
+                'ai_model' => $extraction->aiModel,
+                'ai_duration_ms' => $extraction->aiDurationMs,
+                'tokens_total' => $extraction->tokensTotal,
+                'was_truncated' => $cleaned->wasTruncated,
+            ]);
 
-                $extraction = $this->aiProvider->extract($cleaned);
-                $payload = $this->schemaValidator->validate($extraction->payload);
-
-                $this->logger->info('parse_job.ai_extraction_done', [
-                    'job_id' => $command->jobId,
-                    'ai_provider' => $extraction->provider,
-                    'ai_model' => $extraction->aiModel,
-                    'ai_duration_ms' => $extraction->aiDurationMs,
-                    'tokens_total' => $extraction->tokensTotal,
-                    'was_truncated' => $cleaned->wasTruncated,
-                ]);
-
-                $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload, $extraction);
-            }
+            $result = ParseResult::create(Uuid::v7()->toRfc4122(), $job->getId(), $payload, $extraction);
 
             $this->parseResultRepository->save($result);
 
