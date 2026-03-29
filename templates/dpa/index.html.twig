@@ -2,18 +2,6 @@
 
 {% block title %}{{ 'dpa.page_title'|trans }}{% endblock %}
 
-{% block stylesheets %}
-<style>
-@media print {
-    header, footer, #gdpr-banner, [data-noprint] { display: none !important; }
-    main { padding-top: 0 !important; }
-    body { background: white !important; color: black !important; }
-    .dark\:bg-slate-900, .dark\:bg-slate-950 { background: white !important; }
-    a { color: inherit !important; text-decoration: underline; }
-    mark { background: #fef3c7 !important; color: #78350f !important; }
-}
-</style>
-{% endblock %}
 
 {% block legal_content %}
 
