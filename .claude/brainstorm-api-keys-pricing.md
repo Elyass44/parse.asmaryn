@@ -168,6 +168,43 @@ No payment integration yet.
 
 ---
 
+## Open question 6 — Should BYOK be priced?
+
+Even on BYOK, the user pays nothing for real infrastructure value:
+PDF extraction, async pipeline (RabbitMQ, worker), webhook delivery + retries,
+deduplication, structured JSON output, hosting, DB, uptime.
+A high-volume BYOK user hammers infra while paying zero.
+
+### Option A — BYOK free but capped
+Free up to X parses/month (e.g. 100). Above that, pay even on BYOK.
+Classic "usage-based free tier" (Stripe, Resend, etc.).
+**Pro:** Great acquisition tool, self-limits abuse.
+**Con:** Need to define the cap and enforce quota.
+
+### Option B — BYOK has a flat monthly fee
+Small fee ($9–19/mo) for "infrastructure access." They pay their own AI costs on top.
+Value prop: *"We charge for the pipeline, not the AI."*
+**Pro:** Honest, predictable.
+**Con:** Feels awkward vs. just self-hosting. Hard to justify to cost-sensitive devs.
+
+### Option C — BYOK gets a discount, not free
+Full price = platform AI included. BYOK = same price minus the AI margin.
+E.g. 1000 parses = $30 with platform keys, $12 with BYOK.
+**Pro:** Most transparent — customer sees exactly what they pay for. Good for B2B/ATS.
+**Con:** Requires knowing your AI cost per parse to price the discount correctly.
+
+### Option D — BYOK is a loss-leader (truly free)
+Bet on conversion: free BYOK users eventually switch to paid for convenience.
+**Pro:** Zero friction entry, grow top of funnel fast.
+**Con:** Risky without knowing infra cost per parse. Could be exploited at scale.
+
+> **Leaning toward A or C.**
+> - Option A if positioning as a dev tool (frictionless entry, grow funnel).
+> - Option C if positioning as serious B2B API (pricing transparency builds ATS trust).
+> Option D is risky without a cost model. Option B feels hard to justify vs. self-hosting.
+
+---
+
 ## Challenges / things to stress-test later
 
 - **Encrypted BYOK key storage**: AES-256 with key in env is fine, but key rotation strategy?
